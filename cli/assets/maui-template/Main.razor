@@ -1,0 +1,16 @@
+@inject IJSRuntime JS
+@*
+    Napacitor 宿主根组件:不渲染任何内容,仅在首次渲染后启动 Napacitor 运行时
+    (发现插件 → 注入原生桥 → 按 napacitor.entries.json 导入 Web 应用入口脚本)。
+    宿主无需任何 Napacitor 配置代码 —— 插件由运行时反射自动发现。
+*@
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await NapacitorRuntime.StartAsync(JS);
+        }
+    }
+}

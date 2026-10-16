@@ -1,0 +1,23 @@
+{
+  "name": "@napacitor/cli",
+  "version": "0.1.2-beta.0",
+  "description": "Napacitor CLI(nap 命令,与 @capacitor/cli 对应;零 npm 运行时依赖)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "nap": "bin/nap.js"
+  },
+  "files": [
+    "bin/",
+    "dist/",
+    "assets/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}

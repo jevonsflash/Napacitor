@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    napacitor.build.props —— 由 `nap sync` 自动生成/更新(勿手动编辑)。
+    作用与 Capacitor Android 的 capacitor.settings.gradle / capacitor.build.gradle 对应:
+    把应用依赖的每个 @napacitor/* npm 包内的 C# 工程(及 Napacitor 运行时)接入宿主编译。
+    初始版本仅引用运行时;安装插件并执行 nap sync 后按需扩充。
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\node_modules\@napacitor\maui\src\Napacitor.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@napacitor/core": ["../../core/dist/index.d.ts"]
+    },
+    "types": []
+  },
+  "include": ["src/**/*.ts", "dist/**/*.d.ts"]
+}

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Napacitor</RootNamespace>
+    <AssemblyName>Napacitor</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Description>Napacitor 运行时 —— .NET MAUI Blazor 原生抽象层(对应 @capacitor/android)</Description>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.JSInterop" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 原生桥脚本:由 scripts/sync-native-bridge.mjs 从 core/dist 同步;C# 运行时注入 WebView -->
+    <EmbeddedResource Include="JSBridge\napacitor-native-bridge.js" LogicalName="napacitor-native-bridge.js" />
+  </ItemGroup>
+
+</Project>

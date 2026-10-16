@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Napacitor.Plugins.Device</RootNamespace>
+    <AssemblyName>Napacitor.Device</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Description>Napacitor Device 插件(.NET MAUI 实现)</Description>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      运行时引用,按包的两种所在布局解析(本工程仅作为宿主的依赖被编译,不单独构建):
+      - npm 安装布局:node_modules/@napacitor/<p>/maui/ → 相邻的 @napacitor/maui 包
+      - 仓库源码布局:plugins/<p>/maui/ → 顶层 maui/
+      注意:MSBuild 不对 junction/符号链接路径做规范化,相对引用按字面路径解析。
+    -->
+    <ProjectReference Include="..\..\maui\src\Napacitor.csproj" Condition="Exists('..\..\maui\src\Napacitor.csproj')" />
+    <ProjectReference Include="..\..\..\maui\src\Napacitor.csproj" Condition="!Exists('..\..\maui\src\Napacitor.csproj')" />
+  </ItemGroup>
+
+</Project>

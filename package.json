@@ -1,0 +1,21 @@
+{
+  "name": "napacitor",
+  "private": true,
+  "description": "使用 Web 混合开发的跨平台运行时(类似Capasitor)，原生抽象层为 .NET MAUI Blazor, 最终平台宿主是一个 MAUI 项目",
+  "workspaces": [
+    "core",
+    "cli",
+    "maui",
+    "plugins/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "sync:native-bridge": "node scripts/sync-native-bridge.mjs",
+    "sync:maui-template": "node scripts/sync-maui-template.mjs",
+    "sync": "npm run sync:native-bridge && npm run sync:maui-template"
+  },
+  "devDependencies": {
+    "typescript": "~5.4.5"
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+}
