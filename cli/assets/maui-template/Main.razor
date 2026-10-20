@@ -8,9 +8,30 @@
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender)
+        {
+            return;
+        }
+
+        Console.WriteLine("[NapacitorHost] OnAfterRenderAsync(firstRender) 触发,开始启动运行时");
+        try
         {
             await NapacitorRuntime.StartAsync(JS);
+            Console.WriteLine("[NapacitorHost] NapacitorRuntime.StartAsync 完成");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[NapacitorHost] 启动失败:{ex}");
+            var message = System.Text.Json.JsonSerializer.Serialize($"启动失败:{ex.Message}");
+            try
+            {
+                await JS.InvokeVoidAsync("eval",
+                    $"try{{document.getElementById('status').textContent={message}}}catch(e){{}}");
+            }
+            catch
+            {
+                // JSInterop 已不可用时仅保留控制台日志
+            }
         }
     }
 }

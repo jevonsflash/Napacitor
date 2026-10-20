@@ -366,5 +366,11 @@ FodyWeavers.xsd
 !cli/bin/
 !cli/bin/**
 
+# Napacitor: TypeScript 构建产物不入库(npm run build 可重建,发布前先构建)
+dist/
+
 # npm 发布凭证(临时写入,勿提交)
 .npmrc
+
+# macOS
+.DS_Store

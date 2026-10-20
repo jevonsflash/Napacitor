@@ -1,5 +1,3 @@
-using Microsoft.Maui.ApplicationModel.DataTransfer;
-
 namespace Napacitor.Plugins.Clipboard;
 
 /// <summary>write() 参数结构(与 @capacitor/clipboard 的 WriteOptions 对应)。</summary>
@@ -31,7 +29,7 @@ public class ClipboardPlugin : NapacitorPluginBase
     {
         if (!string.IsNullOrEmpty(options.String))
         {
-            await Clipboard.Default.SetTextAsync(options.String);
+            await Microsoft.Maui.ApplicationModel.DataTransfer.Clipboard.Default.SetTextAsync(options.String);
             return;
         }
         if (!string.IsNullOrEmpty(options.Image))
@@ -47,7 +45,7 @@ public class ClipboardPlugin : NapacitorPluginBase
     [NapacitorMethod]
     public async Task<ClipboardReadResult> Read()
     {
-        var text = await Clipboard.Default.GetTextAsync();
+        var text = await Microsoft.Maui.ApplicationModel.DataTransfer.Clipboard.Default.GetTextAsync();
         return new ClipboardReadResult { Value = text ?? string.Empty };
     }
 }

@@ -81,23 +81,30 @@ public sealed class NapacitorRuntime
 
         // ① 反射发现插件(对应 Capacitor Android 注解处理器生成的插件清单)
         _plugins.DiscoverPlugins();
+        Console.WriteLine($"[Napacitor] ① 插件发现完成:{string.Join(",", PluginNames)}");
 
         // ② 注入 NapacitorNative 平台信息 + 原生桥(native-bridge)脚本
         await InjectNativeBridgeAsync(js);
+        Console.WriteLine("[Napacitor] ② 原生桥注入完成");
 
         // ③ 读取 napacitor.config.json(由 nap copy 拷入 wwwroot;缺失容忍)
         await LoadAppConfigAsync(js);
+        Console.WriteLine("[Napacitor] ③ 应用配置加载完成");
 
         // ④ 按序导入 Web 应用入口脚本
         var entries = options?.Entries ?? await LoadEntriesAsync(js);
-        foreach (var entry in entries)
+        Console.WriteLine($"[Napacitor] ④ 入口清单:{string.Join(",", entries)}");
+        foreach (var rawEntry in entries)
         {
+            var entry = NormalizeEntry(rawEntry);
             try
             {
                 await js.InvokeAsync<IJSObjectReference>("import", entry);
+                Console.WriteLine($"[Napacitor] ④ 已导入入口脚本 {entry}");
             }
             catch (JSException ex)
             {
+                Console.WriteLine($"[Napacitor] ④ 导入 {entry} 失败:{ex.Message}");
                 throw new NapacitorException(
                     NapacitorException.Error,
                     $"导入入口脚本 {entry} 失败:{ex.Message}", ex);
@@ -240,6 +247,16 @@ public sealed class NapacitorRuntime
             return Array.Empty<string>();
         }
     }
+
+    /// <summary>
+    /// 入口脚本路径 → ES 模块说明符:Blazor JSInterop 的 import 仅把 "./" 前缀解析为
+    /// 相对 document.baseURI 的 URL,裸文件名会被 WebKit 判为非法模块名(非法 URL)。
+    /// </summary>
+    private static string NormalizeEntry(string entry) =>
+        entry.StartsWith('/') || entry.StartsWith("./") || entry.StartsWith("../")
+            || Uri.TryCreate(entry, UriKind.Absolute, out _)
+            ? entry
+            : $"./{entry}";
 
     /// <summary>调用 JS 侧 __fetchText 助手读取同源静态文本(缺失返回 null)。</summary>
     private static async Task<string?> FetchTextAsync(IJSRuntime js, string url)

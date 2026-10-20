@@ -31,21 +31,22 @@ public class BatteryPlugin : NapacitorPluginBase
         return Task.FromResult(Snapshot());
     }
 
-    /// <summary>首个监听器注册到 batteryStatusChange 后订阅原生事件。</summary>
-    protected internal override void OnListenerAdded(string eventName)
+    /// <summary>首个监听器注册到 batteryStatusChange 后订阅原生事件。
+    /// (跨程序集重写 protected internal 成员须降级为 protected —— C# 可访问性规则)</summary>
+    protected override void OnListenerAdded(string eventName)
     {
         if (eventName == StatusChangeEvent)
         {
-            Battery.Default.BatteryInfoChanged += OnBatteryInfoChanged;
+            Microsoft.Maui.Devices.Battery.Default.BatteryInfoChanged += OnBatteryInfoChanged;
         }
     }
 
     /// <summary>batteryStatusChange 的最后一个监听器移除后退订原生事件。</summary>
-    protected internal override void OnListenerRemoved(string eventName)
+    protected override void OnListenerRemoved(string eventName)
     {
         if (eventName == StatusChangeEvent)
         {
-            Battery.Default.BatteryInfoChanged -= OnBatteryInfoChanged;
+            Microsoft.Maui.Devices.Battery.Default.BatteryInfoChanged -= OnBatteryInfoChanged;
         }
     }
 
@@ -60,7 +61,7 @@ public class BatteryPlugin : NapacitorPluginBase
 
     private static BatteryInfoResult Snapshot()
     {
-        var battery = Battery.Default;
+        var battery = Microsoft.Maui.Devices.Battery.Default;
         return new BatteryInfoResult
         {
             BatteryLevel = Math.Clamp(battery.ChargeLevel, 0.0, 1.0),

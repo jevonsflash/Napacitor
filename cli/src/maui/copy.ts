@@ -85,7 +85,7 @@ export function transformIndexHtml(html: string): {
       hasBlazorScript = true;
       return tag; // Blazor 引导脚本保留
     }
-    entries.push(src); // 本地脚本:摘除,交由原生运行时按序 import
+    entries.push(toModuleSpecifier(src)); // 本地脚本:摘除,交由原生运行时按序 import
     return '';
   });
 
@@ -98,6 +98,17 @@ export function transformIndexHtml(html: string): {
     result = insertBeforeBodyEnd(result, BLAZOR_SCRIPT);
   }
   return { html: result, entries };
+}
+
+/**
+ * 本地脚本路径 → ES 模块说明符:Blazor JSInterop 的 import 仅把 "./" 前缀解析为
+ * 相对 document.baseURI 的 URL,裸文件名(如 "app.js")会被 WebKit 判为非法模块名。
+ */
+function toModuleSpecifier(src: string): string {
+  if (/^[./]/.test(src) || /^[a-z][a-z0-9+.-]*:/i.test(src)) {
+    return src;
+  }
+  return `./${src}`;
 }
 
 function insertBeforeBodyEnd(html: string, snippet: string): string {

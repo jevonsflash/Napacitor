@@ -113,12 +113,29 @@ public sealed class PluginRegistry
             queue.Enqueue(entry);
         }
 
+        // 运行时自身(GetEntryAssembly 在 iOS/Mono 等平台可能为 null,兜底入队)
+        queue.Enqueue(typeof(PluginRegistry).Assembly);
+
         // 已加载程序集(宿主可能通过其他途径触碰过插件程序集)
         foreach (var loaded in AppDomain.CurrentDomain.GetAssemblies())
         {
             if (IsNapacitorAssembly(loaded))
             {
                 queue.Enqueue(loaded);
+            }
+        }
+
+        // 磁盘扫描兜底:宿主代码不静态引用插件,ILLink 会裁掉宿主→插件的
+        // 程序集引用,仅靠引用链发现不了插件(App bundle 内程序集以文件形式存在)
+        foreach (var path in EnumerateNapacitorAssemblyFiles())
+        {
+            try
+            {
+                queue.Enqueue(Assembly.LoadFrom(path));
+            }
+            catch
+            {
+                // 加载失败(非程序集/程序集已内嵌的平台),跳过
             }
         }
 
@@ -156,6 +173,20 @@ public sealed class PluginRegistry
 
     private static bool IsNapacitorAssembly(Assembly assembly) =>
         IsNapacitorAssemblyName(assembly.GetName());
+
+    /// <summary>枚举 App 基目录下的 Napacitor*.dll(目录不可访问时返回空)。</summary>
+    private static IEnumerable<string> EnumerateNapacitorAssemblyFiles()
+    {
+        try
+        {
+            return Directory.EnumerateFiles(
+                AppContext.BaseDirectory, "Napacitor*.dll", SearchOption.TopDirectoryOnly);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Array.Empty<string>();
+        }
+    }
 
     private static bool IsNapacitorAssemblyName(AssemblyName name) =>
         name.Name is not null && name.Name.StartsWith("Napacitor", StringComparison.OrdinalIgnoreCase);
