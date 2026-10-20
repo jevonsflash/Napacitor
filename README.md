@@ -1,5 +1,7 @@
 # Napacitor
 
+[![AtomGit G-Star](https://gitcode.com/jevonsflash1/Napacitor/star/new_badge.svg)](https://gitcode.com/jevonsflash1/Napacitor)
+
 复刻 [Capacitor](https://github.com/ionic-team/capacitor) 的跨平台运行时 —— 用一份 Web 前端代码构建真正的原生应用,但**原生抽象层不是每平台独立原生工程,而是 .NET MAUI Blazor**(BlazorWebView + JSInterop):同一份 C# 运行时覆盖 Android / iOS / Mac Catalyst / Windows。
 
 ```text
@@ -41,7 +43,7 @@
 
 ## 快速上手
 
-> 完整可运行的示例见 [example/](example/) —— React 单页应用 + 全部内置插件演示,
+> 新手入门(Starters)见 [napacitor-starters](https://github.com/jevonsflash/napacitor-starters) —— React 单页应用 + 全部内置插件演示,
 > 并记录了从 `npm create vite` 到 `nap run` 的真实用户步骤复盘。
 
 ```bash
