@@ -3,9 +3,11 @@
  * 命令分发 + help + 轻量 argv 解析(零依赖,替代 minimist)。
  */
 import type { ParsedArgs } from './definitions';
+import * as path from 'node:path';
 import { loadConfig } from './config';
 import { fatal } from './common';
 import * as colors from './colors';
+import { readTextFile } from './util/fs';
 import { PLATFORM_NAME } from './maui/common';
 import { initCommand } from './tasks/init';
 import { addCommand } from './tasks/add';
@@ -15,7 +17,13 @@ import { openCommand } from './tasks/open';
 import { runTaskCommand } from './tasks/run';
 import { listCommand } from './tasks/list';
 
-const VERSION = '0.1.0';
+// 版本号取自包根 package.json(本文件编译后位于 dist/,上一级即包根),避免发布时忘记同步
+async function readVersion(): Promise<string> {
+  const pkg = JSON.parse(
+    await readTextFile(path.join(__dirname, '..', 'package.json')),
+  ) as { version: string };
+  return pkg.version;
+}
 
 const HELP = `Napacitor CLI —— 复刻 Capacitor 的跨平台运行时 CLI(原生层为 .NET MAUI Blazor)
 
@@ -138,7 +146,7 @@ export async function run(argv: string[]): Promise<void> {
 
 /** bin 入口:捕获未处理异常并红字退出。 */
 export async function main(): Promise<void> {
-  console.log(colors.weak(`\nNapacitor CLI ${VERSION}\n`));
+  console.log(colors.weak(`\nNapacitor CLI ${await readVersion()}\n`));
   try {
     await run(process.argv.slice(2));
   } catch (err) {

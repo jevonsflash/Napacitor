@@ -1,6 +1,6 @@
 {
   "name": "@napacitor/device",
-  "version": "0.1.0",
+  "version": "0.1.2-beta.3",
   "description": "Napacitor Device 插件(设备信息,与 @capacitor/device 对应)",
   "homepage": "https://github.com/jevonsflash/napacitor",
   "license": "MIT",

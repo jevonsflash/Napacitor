@@ -1,6 +1,6 @@
 {
   "name": "@napacitor/haptics",
-  "version": "0.1.0",
+  "version": "0.1.2-beta.3",
   "description": "Napacitor Haptics 插件(振动反馈,与 @capacitor/haptics 对应)",
   "homepage": "https://github.com/jevonsflash/napacitor",
   "license": "MIT",

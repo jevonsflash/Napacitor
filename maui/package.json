@@ -1,6 +1,6 @@
 {
   "name": "@napacitor/maui",
-  "version": "0.1.0",
+  "version": "0.1.2-beta.3",
   "description": "Napacitor .NET MAUI 运行时(对应 @capacitor/android 的原生库角色,以 C# 实现)",
   "homepage": "https://github.com/jevonsflash/napacitor",
   "license": "MIT",

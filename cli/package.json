@@ -1,6 +1,6 @@
 {
   "name": "@napacitor/cli",
-  "version": "0.1.2-beta.0",
+  "version": "0.1.2-beta.4",
   "description": "Napacitor CLI(nap 命令,与 @capacitor/cli 对应;零 npm 运行时依赖)",
   "homepage": "https://github.com/jevonsflash/napacitor",
   "license": "MIT",

@@ -7,7 +7,7 @@
  * Napacitor 中它作为 Napacitor.csproj 的 EmbeddedResource(napacitor-native-bridge.js)
  * 由 NapacitorRuntime eval 注入。
  */
-import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -20,7 +20,23 @@ if (!existsSync(src)) {
   process.exit(1);
 }
 
+const cjs = readFileSync(src, 'utf8');
+
+// 顶层 "use strict" 指令由 IIFE 自身提供,剥离原指令避免成为无效语句。
+const body = cjs.replace(/^"use strict";\r?\n/, '');
+
+const bridge = `
+(function () {
+  'use strict';
+  // exports/module 垫片:吸收 tsc CJS 输出的顶层导出语句,隔离为纯脚本。
+  var module = { exports: {} };
+  var exports = module.exports;
+
+${body}
+})();
+`;
+
 mkdirSync(path.dirname(dest), { recursive: true });
-copyFileSync(src, dest);
+writeFileSync(dest, bridge, 'utf8');
 
 console.log('✓ core/dist/native-bridge.js → maui/src/JSBridge/napacitor-native-bridge.js');
