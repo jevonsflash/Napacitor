@@ -14,6 +14,8 @@ import { addCommand } from './tasks/add';
 import { copyCommand } from './tasks/copy';
 import { syncCommand } from './tasks/sync';
 import { openCommand } from './tasks/open';
+import { buildCommand } from './tasks/build';
+import { cleanCommand } from './tasks/clean';
 import { runTaskCommand } from './tasks/run';
 import { listCommand } from './tasks/list';
 
@@ -35,19 +37,22 @@ const HELP = `Napacitor CLI —— 复刻 Capacitor 的跨平台运行时 CLI(�
   copy [maui]                                 复制 Web 构建产物到宿主 wwwroot 并宿主化改造
   sync [maui]                                 copy + 重新生成 napacitor.build.props
   open <maui>                                 用系统默认方式打开宿主工程
+  build [maui] [--target <t>] [-c <cfg>]      构建宿主工程(dotnet build)
+  clean [maui] [--target <t>] [-c <cfg>]      清理宿主构建产物(dotnet clean)
   run [maui] [--target <t>] [-c <cfg>]        构建并运行宿主(dotnet build -t:Run)
   list                                        列出应用已安装的 @napacitor/* 包
   help                                        显示本帮助
 
 选项:
-  --target <windows|android|ios|maccatalyst>  nap run 的目标平台(Windows 默认 windows)
-  -c <Debug|Release>                          nap run 的构建配置(默认 Debug)
+  --target <windows|android|ios|maccatalyst>  build/clean/run 的目标平台(Windows 上默认 windows,其余默认 android)
+  -c <Debug|Release>                          build/clean/run 的构建配置(默认 Debug)
 
 示例(与 Capacitor 工作流同形):
   nap init com.example.app "My App" --web-dir dist
   npm install @napacitor/core @napacitor/maui @napacitor/device
   nap add maui
   nap sync
+  nap build --target windows         # Windows 的 run 不含构建,先 build 再 run
   nap run --target windows`;
 
 /** 解析 argv:位置参数与 --key value / -k value 选项(替代 minimist)。 */
@@ -118,6 +123,22 @@ export async function run(argv: string[]): Promise<void> {
     case 'open':
       resolvePlatform(args);
       await openCommand(await loadConfig(process.cwd()));
+      break;
+
+    case 'build':
+      resolvePlatform(args);
+      await buildCommand(await loadConfig(process.cwd()), {
+        target: options['target'],
+        configuration: options['c'],
+      });
+      break;
+
+    case 'clean':
+      resolvePlatform(args);
+      await cleanCommand(await loadConfig(process.cwd()), {
+        target: options['target'],
+        configuration: options['c'],
+      });
       break;
 
     case 'run':

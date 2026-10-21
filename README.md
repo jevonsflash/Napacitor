@@ -35,7 +35,7 @@
 | `cli/` = `@capacitor/cli` | `cli/` = `@napacitor/cli` | `nap` 命令 |
 | capacitor-plugins 仓 `plugins/<x>/` | `plugins/<x>/` | 5 个插件(device/clipboard/haptics/share/battery) |
 | `capacitor.settings.gradle` / `capacitor.build.gradle` | `napacitor.build.props` | nap sync 生成的 MSBuild 工程引用 |
-| `cap add/copy/sync/open/run/ls` | `nap add/copy/sync/open/run/list` | 工作流同形 |
+| `cap add/copy/sync/open/run/ls` | `nap add/copy/sync/open/build/clean/run/list` | 工作流同形(+build/clean 为面向 dotnet 的命令传递) |
 | native-bridge.js 注入 WebView | napacitor-native-bridge.js 由 C# eval 注入 | 同一链路 |
 | `lerna.json` / `nx.json` | 无 | 0.1 阶段用 npm workspaces + 根 scripts 即可 |
 
@@ -59,7 +59,9 @@ npx nap add maui         # 生成 maui/ 宿主工程(自动 sync)
 npx nap sync             # copy + 重新生成 napacitor.build.props
 
 # ③ 运行
+npx nap build --target windows     # 构建宿主(Windows 的 run 不含构建,先 build 再 run)
 npx nap run --target windows      # 或 android / ios / maccatalyst
+npx nap clean --target windows     # 清理宿主构建产物(应用运行中会锁定 DLL,先停止再 clean)
 npx nap open maui                 # 用 IDE 打开宿主工程
 ```
 

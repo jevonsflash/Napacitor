@@ -23,8 +23,8 @@ export interface CLIConfig {
   raw: Record<string, unknown>;
 }
 
-/** `nap run` 选项。 */
-export interface RunOptions {
+/** `nap build` / `nap clean` / `nap run` 的共用选项。 */
+export interface TargetOptions {
   /** 目标平台:windows / android / ios / maccatalyst。 */
   target?: string;
   /** 构建配置:Debug(默认)/ Release。 */
