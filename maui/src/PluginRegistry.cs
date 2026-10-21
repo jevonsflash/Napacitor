@@ -116,13 +116,14 @@ public sealed class PluginRegistry
         // 运行时自身(GetEntryAssembly 在 iOS/Mono 等平台可能为 null,兜底入队)
         queue.Enqueue(typeof(PluginRegistry).Assembly);
 
-        // 已加载程序集(宿主可能通过其他途径触碰过插件程序集)
+        // 已加载程序集:全部入队,不按名称过滤。Android/iOS 的入口是 Java/
+        // Objective-C 运行时,GetEntryAssembly() 返回 null,若只入队 Napacitor*
+        // 命名的程序集,会漏掉宿主 App.dll —— 它经 napacitor.build.props 静
+        // 态引用了全部插件程序集,而运行时启动(Main.razor 所在)时它必然已加载,
+        // 从它的引用链即可发现插件(配合下方 BFS 的 seen 去重,重复入队无害)。
         foreach (var loaded in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (IsNapacitorAssembly(loaded))
-            {
-                queue.Enqueue(loaded);
-            }
+            queue.Enqueue(loaded);
         }
 
         // 磁盘扫描兜底:宿主代码不静态引用插件,ILLink 会裁掉宿主→插件的
