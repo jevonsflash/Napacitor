@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "build:native-bridge": "tsc -p tsconfig.native-bridge.json"
+    "build:native-bridge": "tsc -p tsconfig.native-bridge.json",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "~5.4.5"

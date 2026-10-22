@@ -1,0 +1,20 @@
+# Napacitor pre-commit: type-check + lint + 构建全部工作区 + 构建 native-bridge + 同步(钩子结构参考 v-frontend-partner)
+# 注: 用 set -e 快速失败(任一步失败立即中止提交),替代参考项目逐条捕获返回值的写法
+set -e
+
+echo "🔍 Running TypeScript type check..."
+npm run type-check
+
+echo "🔍 Running ESLint check..."
+npm run lint
+
+echo "🔨 Building all workspaces..."
+npm run build
+
+echo "🔨 Building native bridge (core)..."
+npm run build:native-bridge -w core
+
+echo "🔄 Syncing native bridge & MAUI template..."
+npm run sync
+
+echo "✅ All checks passed. Proceeding with commit."

@@ -10,12 +10,34 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "prepare": "husky",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "lint": "eslint \"cli/src/**/*.ts\" \"core/src/**/*.ts\" \"plugins/*/src/**/*.ts\"",
+    "commitlint": "commitlint --edit",
     "sync:native-bridge": "node scripts/sync-native-bridge.mjs",
     "sync:maui-template": "node scripts/sync-maui-template.mjs",
     "sync": "npm run sync:native-bridge && npm run sync:maui-template"
   },
   "devDependencies": {
-    "typescript": "~5.4.5"
+    "@commitlint/cli": "^17.7.2",
+    "@commitlint/config-conventional": "^17.7.0",
+    "eslint": "^9.35.0",
+    "husky": "^9.1.7",
+    "typescript": "~5.4.5",
+    "typescript-eslint": "^8.43.0"
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"],
+    "rules": {
+      "body-leading-blank": [2, "always"],
+      "type-empty": [2, "never"],
+      "subject-case": [0],
+      "type-enum": [
+        2,
+        "always",
+        ["feat", "fix", "docs", "style", "refactor", "perf", "test", "revert", "build", "ci", "types"]
+      ]
+    }
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

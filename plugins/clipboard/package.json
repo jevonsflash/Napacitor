@@ -11,7 +11,8 @@
     "maui/"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
   },
   "peerDependencies": {
     "@napacitor/core": "^0.1.0"

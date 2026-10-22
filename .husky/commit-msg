@@ -1,0 +1,12 @@
+# Napacitor commit-msg: commitlint 提交信息规范校验(钩子结构参考 v-frontend-partner)
+echo "🔍 Running commitlint check..."
+npm run commitlint
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+  echo "❌ Commit aborted due to commitlint errors."
+  exit 1
+fi
+
+echo "✅ All checks passed. Proceeding with commit."
+exit 0
