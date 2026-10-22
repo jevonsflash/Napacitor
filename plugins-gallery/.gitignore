@@ -1,5 +1,3 @@
 node_modules/
-maui/wwwroot/
-maui/bin/
-maui/obj/
+maui/
 package-lock.json
