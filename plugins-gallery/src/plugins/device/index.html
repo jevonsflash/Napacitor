@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Device · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Device <code>@napacitor/device</code></h1>
+    <p class="meta">
+        <span>分组:设备信息 · 注册名:Device</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/device" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">获取设备基础信息:型号、平台、操作系统版本、制造商、是否虚拟设备,以及当前 UI 语言代码与区域设置。对应 .NET MAUI DeviceInfo API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-info">获取设备信息</button>
+                <button id="btn-lang" class="purple">语言代码</button>
+                <button id="btn-locale" class="green">区域设置</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Device } from '@napacitor/device';
+
+// 设备基础信息
+const info = await Device.getInfo();
+console.log(info.platform, info.model, info.osVersion);
+
+// 语言与区域(如 zh、zh-CN)
+const { value: lang } = await Device.getLanguageCode();
+const { value: locale } = await Device.getLocale();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

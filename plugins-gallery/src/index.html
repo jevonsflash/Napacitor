@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Napacitor Plugins Gallery</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <header class="topbar">
+        <button id="toggle" class="icon-btn" title="折叠 / 展开导航" aria-label="折叠 / 展开导航">
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                <path d="M1.5 3h13M1.5 8h13M1.5 13h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </button>
+        <div class="brand">Napacitor <b>Plugins&nbsp;Gallery</b></div>
+        <a class="github" href="https://github.com/jevonsflash/napacitor" target="_blank" rel="noopener">GitHub ↗</a>
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="group">设备信息</div>
+            <a class="nav-item" data-id="device" href="plugins/device/index.html" target="view">Device</a>
+            <a class="nav-item" data-id="battery" href="plugins/battery/index.html" target="view">Battery</a>
+            <a class="nav-item" data-id="app-info" href="plugins/app-info/index.html" target="view">App Info</a>
+            <a class="nav-item" data-id="connectivity" href="plugins/connectivity/index.html" target="view">Connectivity</a>
+            <div class="group">数据交互</div>
+            <a class="nav-item" data-id="clipboard" href="plugins/clipboard/index.html" target="view">Clipboard</a>
+            <a class="nav-item" data-id="share" href="plugins/share/index.html" target="view">Share</a>
+            <div class="group">交互反馈</div>
+            <a class="nav-item" data-id="haptics" href="plugins/haptics/index.html" target="view">Haptics</a>
+            <div class="group">传感器</div>
+            <a class="nav-item" data-id="motion" href="plugins/motion/index.html" target="view">Motion</a>
+            <div class="group">硬件控制</div>
+            <a class="nav-item" data-id="flashlight" href="plugins/flashlight/index.html" target="view">Flashlight</a>
+            <div class="group">系统功能</div>
+            <a class="nav-item" data-id="app-launcher" href="plugins/app-launcher/index.html" target="view">App Launcher</a>
+            <div class="group">通讯</div>
+            <a class="nav-item" data-id="email" href="plugins/email/index.html" target="view">Email</a>
+            <a class="nav-item" data-id="sms" href="plugins/sms/index.html" target="view">Sms</a>
+            <a class="nav-item" data-id="phone-dialer" href="plugins/phone-dialer/index.html" target="view">Phone Dialer</a>
+        </nav>
+        <main class="detail">
+            <iframe id="view" name="view" src="plugins/device/index.html" title="插件详情"></iframe>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

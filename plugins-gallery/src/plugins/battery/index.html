@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Battery · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Battery <code>@napacitor/battery</code></h1>
+    <p class="meta">
+        <span>分组:设备信息 · 注册名:Battery</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/battery" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">获取电池电量与充电状态,并可通过 batteryStatusChange 事件实时监听电量变化(原生端主动推送,无需轮询)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-info">获取电池信息</button>
+                <button id="btn-listen" class="orange">开始监听</button>
+            </div>
+            <p class="hint">监听开启后,电量或充电状态变化会弹窗提醒。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Battery } from '@napacitor/battery';
+
+// 一次性读取
+const { batteryLevel, isCharging } = await Battery.getBatteryInfo();
+console.log(Math.round(batteryLevel * 100) + '%', isCharging);
+
+// 持续监听电量与充电状态变化
+const handle = await Battery.addListener('batteryStatusChange', (info) => {
+  console.log(info.batteryLevel, info.isCharging);
+});
+// handle.remove() 停止监听</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

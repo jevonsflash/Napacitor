@@ -12,6 +12,7 @@ public class NapacitorException : Exception
     public const string Canceled = "CANCELED";
     public const string Error = "ERROR";
     public const string Unavailable = "UNAVAILABLE";
+    public const string Unsupported = "UNSUPPORTED";
 
     /// <summary>机器可读错误码,如 'NOT_IMPLEMENTED'。</summary>
     public string Code { get; }

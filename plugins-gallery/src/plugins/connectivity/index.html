@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Connectivity · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Connectivity <code>@napacitor/connectivity</code></h1>
+    <p class="meta">
+        <span>分组:设备信息 · 注册名:Connectivity</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/connectivity" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">检测网络连接状态:连接类型(WiFi / 蜂窝 / 以太网…)、网络访问级别,并可通过 connectivityChange 事件监听网络变化。对应 .NET MAUI Connectivity API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-status">网络状态</button>
+                <button id="btn-has" class="purple">是否有互联网</button>
+                <button id="btn-listen" class="orange">开始监听</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Connectivity } from '@napacitor/connectivity';
+
+// 当前网络状态
+const status = await Connectivity.getStatus();
+console.log(status.connectionType, status.networkAccess, status.isConnected);
+
+// 监听网络变化(断网 / 恢复)
+const handle = await Connectivity.addListener('connectivityChange', (s) => {
+  console.log(s.isConnected ? '网络已恢复' : '网络已断开');
+});</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

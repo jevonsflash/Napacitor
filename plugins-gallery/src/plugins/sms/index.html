@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sms · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Sms <code>@napacitor/sms</code></h1>
+    <p class="meta">
+        <span>分组:通讯 · 注册名:Sms</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/sms" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">唤起系统短信客户端编写短信:指定收件人列表与可选正文。对应 .NET MAUI Sms API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>收件人 <input id="in-to" type="text" value="10086" placeholder="多个号码用英文逗号分隔"></label>
+                <label class="top">正文 <textarea id="in-body" placeholder="短信正文(可选)"></textarea></label>
+            </div>
+            <div class="btns">
+                <button id="btn-can" class="gray">检测支持</button>
+                <button id="btn-send">发送短信</button>
+            </div>
+            <p class="hint">发送不会直接发出,只会打开系统短信客户端并预填内容,由用户确认发送。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Sms } from '@napacitor/sms';
+
+const { supported } = await Sms.isSupported();
+if (supported) {
+  await Sms.send({
+    recipients: ['10086'],
+    body: '查询余额',
+  });
+}</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

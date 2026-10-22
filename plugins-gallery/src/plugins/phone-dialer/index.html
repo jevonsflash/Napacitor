@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Phone Dialer · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Phone Dialer <code>@napacitor/phone-dialer</code></h1>
+    <p class="meta">
+        <span>分组:通讯 · 注册名:PhoneDialer</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/phone-dialer" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">打开系统拨号界面并预填号码(不会直接拨出)。对应 .NET MAUI PhoneDialer API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>号码 <input id="in-number" type="text" value="10086"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-can" class="gray">检测支持</button>
+                <button id="btn-open">拨号</button>
+            </div>
+            <p class="hint">仅打开拨号界面并预填号码,不会自动拨出;桌面设备通常不支持。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { PhoneDialer } from '@napacitor/phone-dialer';
+
+const { supported } = await PhoneDialer.isSupported();
+if (supported) {
+  await PhoneDialer.open({ number: '10086' });
+}</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Motion · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Motion <code>@napacitor/motion</code></h1>
+    <p class="meta">
+        <span>分组:传感器 · 注册名:Motion</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/motion" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">统一封装五类运动传感器:加速度计、陀螺仪、磁力计、指南针、气压计。按需启停、选择采样速率,读数经事件持续推送。对应 .NET MAUI Sensors 系列 API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>传感器
+                    <select id="in-sensor">
+                        <option value="accelerometer" selected>加速度计</option>
+                        <option value="gyroscope">陀螺仪</option>
+                        <option value="magnetometer">磁力计</option>
+                        <option value="compass">指南针</option>
+                        <option value="barometer">气压计</option>
+                    </select>
+                </label>
+                <label>采样速率
+                    <select id="in-speed">
+                        <option value="DEFAULT" selected>DEFAULT(约 5Hz)</option>
+                        <option value="UI">UI(约 17Hz)</option>
+                        <option value="GAME">GAME(约 25Hz)</option>
+                        <option value="FASTEST">FASTEST(约 50Hz)</option>
+                    </select>
+                </label>
+            </div>
+            <div class="btns">
+                <button id="btn-check" class="gray">检测支持</button>
+                <button id="btn-start" class="green">启动监听</button>
+                <button id="btn-stop" class="orange">停止监听</button>
+            </div>
+            <div id="output" class="output">启动监听后,最新读数将显示在这里</div>
+            <p class="hint">桌面设备通常仅有部分传感器可用,请在真机体验完整效果;切换传感器再点启动会自动停止上一个监听。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Motion, SensorSpeed } from '@napacitor/motion';
+
+// 检测支持后启动加速度计
+const { supported } = await Motion.isAccelerometerSupported();
+if (supported) {
+  await Motion.startAccelerometer({ speed: SensorSpeed.Game });
+  await Motion.addListener('accelerometerReading', (r) => {
+    console.log(r.x, r.y, r.z);
+  });
+}
+
+// 用完记得停止以省电
+await Motion.stopAccelerometer();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

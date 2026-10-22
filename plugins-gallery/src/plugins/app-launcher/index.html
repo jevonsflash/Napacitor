@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>App Launcher · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>App Launcher <code>@napacitor/app-launcher</code></h1>
+    <p class="meta">
+        <span>分组:系统功能 · 注册名:AppLauncher</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/app-launcher" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">打开 URL、唤起其他应用(按包名 / Bundle ID)、跳转系统地图定位。对应 .NET MAUI Launcher / Map API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>URL <input id="in-url" type="text" value="https://github.com/jevonsflash/napacitor"></label>
+                <label>应用 ID <input id="in-appid" type="text" value="com.android.chrome"></label>
+                <label>纬度 <input id="in-lat" type="text" value="39.9042"></label>
+                <label>经度 <input id="in-lng" type="text" value="116.4074"></label>
+                <label>标签 <input id="in-label" type="text" value="北京"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-can-url" class="gray">检测 URL</button>
+                <button id="btn-open-url">打开 URL</button>
+                <button id="btn-can-app" class="gray">检测应用</button>
+                <button id="btn-open-app" class="purple">打开应用</button>
+                <button id="btn-map" class="green">打开地图</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { AppLauncher } from '@napacitor/app-launcher';
+
+// 打开 URL(浏览器或系统处理)
+await AppLauncher.openUrl({ url: 'https://github.com' });
+
+// 检查能否处理 / 应用是否已安装
+const a = await AppLauncher.canOpenUrl({ url: 'mailto:' });
+const b = await AppLauncher.canOpenApp({ appId: 'com.android.chrome' });
+
+// 打开系统地图并定位
+await AppLauncher.openMap({ latitude: 39.9042, longitude: 116.4074, label: '北京' });</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

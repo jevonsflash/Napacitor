@@ -1,0 +1,24 @@
+{
+  "name": "@napacitor/motion",
+  "version": "0.1.2-beta.3",
+  "description": "Napacitor Motion 插件(加速度计/陀螺仪/磁力计/指南针/气压计,封装 MAUI Sensors API)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "maui/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@napacitor/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@napacitor/core": "^0.1.0",
+    "typescript": "~5.4.5"
+  }
+}

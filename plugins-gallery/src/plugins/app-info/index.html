@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>App Info · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>App Info <code>@napacitor/app-info</code></h1>
+    <p class="meta">
+        <span>分组:设备信息 · 注册名:AppInfo</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/app-info" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">获取当前应用信息:名称、包名、版本号、构建号、主题模式,以及版本跟踪(是否首次安装、历史版本列表)。对应 .NET MAUI AppInfo / VersionTracking API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-info">应用信息</button>
+                <button id="btn-track" class="purple">版本跟踪</button>
+                <button id="btn-settings" class="green">打开系统设置</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { AppInfo } from '@napacitor/app-info';
+
+// 应用基础信息
+const info = await AppInfo.getInfo();
+console.log(info.name, info.version, info.build);
+
+// 版本跟踪:首次启动判断与历史版本
+const tracking = await AppInfo.getVersionTracking();
+console.log(tracking.isFirstLaunchEver, tracking.versionHistory);
+
+// 跳转系统设置页
+await AppInfo.openSettings();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

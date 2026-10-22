@@ -1,0 +1,31 @@
+{
+  "name": "plugins-gallery",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Napacitor 插件演示中心:左侧可折叠导航 + 每插件一个调试页",
+  "scripts": {
+    "sync": "nap sync",
+    "build:windows": "nap build --target windows",
+    "run:windows": "nap run --target windows"
+  },
+  "dependencies": {
+    "@napacitor/app-info": "file:../plugins/app-info",
+    "@napacitor/app-launcher": "file:../plugins/app-launcher",
+    "@napacitor/battery": "file:../plugins/battery",
+    "@napacitor/clipboard": "file:../plugins/clipboard",
+    "@napacitor/connectivity": "file:../plugins/connectivity",
+    "@napacitor/device": "file:../plugins/device",
+    "@napacitor/email": "file:../plugins/email",
+    "@napacitor/flashlight": "file:../plugins/flashlight",
+    "@napacitor/haptics": "file:../plugins/haptics",
+    "@napacitor/maui": "file:../maui",
+    "@napacitor/motion": "file:../plugins/motion",
+    "@napacitor/phone-dialer": "file:../plugins/phone-dialer",
+    "@napacitor/share": "file:../plugins/share",
+    "@napacitor/sms": "file:../plugins/sms"
+  },
+  "devDependencies": {
+    "@napacitor/cli": "file:../cli",
+    "@napacitor/core": "file:../core"
+  }
+}

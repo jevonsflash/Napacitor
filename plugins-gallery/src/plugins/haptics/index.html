@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Haptics · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Haptics <code>@napacitor/haptics</code></h1>
+    <p class="meta">
+        <span>分组:交互反馈 · 注册名:Haptics</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/haptics" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">触发设备触觉反馈:自定义时长振动、冲击/通知触觉、选择变化轻触。桌面与模拟器上部分平台为无操作。对应 .NET MAUI Vibration API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>振动时长
+                    <span class="range">
+                        <input id="in-duration" type="range" min="40" max="800" step="10" value="40">
+                        <b id="duration-val">40ms</b>
+                    </span>
+                </label>
+                <label>冲击强度
+                    <select id="in-impact">
+                        <option value="LIGHT">Light(轻)</option>
+                        <option value="MEDIUM" selected>Medium(中)</option>
+                        <option value="HEAVY">Heavy(重)</option>
+                    </select>
+                </label>
+                <label>通知类型
+                    <select id="in-notify">
+                        <option value="SUCCESS" selected>Success(成功)</option>
+                        <option value="WARNING">Warning(警告)</option>
+                        <option value="ERROR">Error(错误)</option>
+                    </select>
+                </label>
+            </div>
+            <div class="btns">
+                <button id="btn-vibrate">振动</button>
+                <button id="btn-impact" class="purple">冲击</button>
+                <button id="btn-notify" class="green">通知触觉</button>
+                <button id="btn-select" class="orange">选择轻触</button>
+            </div>
+            <p class="hint">桌面平台(Windows / macOS)与模拟器通常无振动马达,调用为无操作且不会报错。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Haptics, ImpactStyle, NotificationType } from '@napacitor/haptics';
+
+// 自定义时长振动(毫秒)
+await Haptics.vibrate({ duration: 40 });
+
+// 冲击 / 通知触觉
+await Haptics.impact({ style: ImpactStyle.Medium });
+await Haptics.notification({ type: NotificationType.Success });
+
+// 列表选择时的轻微触觉
+await Haptics.selection();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

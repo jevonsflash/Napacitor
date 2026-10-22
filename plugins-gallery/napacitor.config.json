@@ -1,0 +1,8 @@
+{
+  "appId": "com.napacitor.gallery",
+  "appName": "Plugins Gallery",
+  "webDir": "src",
+  "maui": {
+    "hostDir": "maui"
+  }
+}

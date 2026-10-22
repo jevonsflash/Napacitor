@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Napacitor.Plugins.Motion</RootNamespace>
+    <AssemblyName>Napacitor.Motion</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Description>Napacitor Motion 插件(加速度计/陀螺仪/磁力计/指南针/气压计,.NET MAUI 实现)</Description>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\maui\src\Napacitor.csproj" Condition="Exists('..\..\maui\src\Napacitor.csproj')" />
+    <ProjectReference Include="..\..\..\maui\src\Napacitor.csproj" Condition="!Exists('..\..\maui\src\Napacitor.csproj')" />
+  </ItemGroup>
+
+</Project>

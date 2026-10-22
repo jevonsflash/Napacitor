@@ -1,0 +1,13 @@
+{
+  "name": "@napacitor/connectivity",
+  "version": "0.1.2-beta.3",
+  "description": "Napacitor Connectivity 插件(网络状态检测与监听,封装 MAUI Connectivity API)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/", "maui/"],
+  "scripts": { "build": "tsc", "type-check": "tsc --noEmit" },
+  "peerDependencies": { "@napacitor/core": "^0.1.0" },
+  "devDependencies": { "@napacitor/core": "^0.1.0", "typescript": "~5.4.5" }
+}

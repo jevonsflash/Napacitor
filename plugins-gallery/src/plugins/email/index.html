@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Email · Napacitor</title>
+    <link rel="stylesheet" href="../plugin.css">
+</head>
+<body>
+    <h1>Email <code>@napacitor/email</code></h1>
+    <p class="meta">
+        <span>分组:通讯 · 注册名:Email</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/email" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">唤起系统邮件客户端编写邮件:支持收件人、抄送、主题、正文(纯文本或 HTML)。对应 .NET MAUI Email API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>收件人 <input id="in-to" type="text" value="someone@example.com" placeholder="多个收件人用英文逗号分隔"></label>
+                <label>主题 <input id="in-subject" type="text" value="来自 Napacitor 的测试邮件"></label>
+                <label class="top">正文 <textarea id="in-body">用 Web 技术构建的原生应用。</textarea></label>
+            </div>
+            <div class="btns">
+                <button id="btn-can" class="gray">检测支持</button>
+                <button id="btn-compose">编写邮件</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Email } from '@napacitor/email';
+
+const { supported } = await Email.isSupported();
+if (supported) {
+  await Email.compose({
+    to: ['someone@example.com'],
+    subject: '来自 Napacitor',
+    body: '&lt;b&gt;用 Web 技术构建的原生应用&lt;/b&gt;',
+    isHtml: true,
+  });
+}</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

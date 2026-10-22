@@ -1,0 +1,13 @@
+{
+  "name": "@napacitor/app-info",
+  "version": "0.1.2-beta.3",
+  "description": "Napacitor AppInfo 插件(应用信息与版本跟踪,封装 MAUI AppInfo+VersionTracking API)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/", "maui/"],
+  "scripts": { "build": "tsc", "type-check": "tsc --noEmit" },
+  "peerDependencies": { "@napacitor/core": "^0.1.0" },
+  "devDependencies": { "@napacitor/core": "^0.1.0", "typescript": "~5.4.5" }
+}

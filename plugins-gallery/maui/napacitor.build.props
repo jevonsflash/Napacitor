@@ -1,0 +1,23 @@
+<Project>
+  <!--
+    napacitor.build.props —— 由 `nap sync` 自动生成/更新(勿手动编辑)。
+    作用与 Capacitor Android 的 capacitor.settings.gradle / capacitor.build.gradle 对应:
+    把应用依赖的每个 @napacitor/* npm 包内的 C# 工程(及 Napacitor 运行时)接入宿主编译。
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\node_modules\@napacitor\maui\src\Napacitor.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\app-info\maui\Napacitor.AppInfo.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\app-launcher\maui\Napacitor.AppLauncher.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\battery\maui\Napacitor.Battery.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\clipboard\maui\Napacitor.Clipboard.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\connectivity\maui\Napacitor.Connectivity.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\device\maui\Napacitor.Device.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\email\maui\Napacitor.Email.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\flashlight\maui\Napacitor.Flashlight.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\haptics\maui\Napacitor.Haptics.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\motion\maui\Napacitor.Motion.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\phone-dialer\maui\Napacitor.PhoneDialer.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\share\maui\Napacitor.Share.csproj" />
+    <ProjectReference Include="..\node_modules\@napacitor\sms\maui\Napacitor.Sms.csproj" />
+  </ItemGroup>
+</Project>
