@@ -1,6 +1,6 @@
 {
   "name": "@napacitor/core",
-  "version": "0.1.2-beta.3",
+  "version": "0.1.2-beta.4",
   "description": "Napacitor 核心 JS 运行时(原生抽象层为 .NET MAUI Blazor)",
   "homepage": "https://github.com/jevonsflash/napacitor",
   "license": "MIT",

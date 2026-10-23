@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Core APIs · Napacitor</title>
+
+</head>
+<body>
+    <h1>Core APIs <code>@napacitor/core / 运行时</code></h1>
+    <p class="meta">
+        <span>分组:运行时 · MAUI ⇄ Web 交互</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/maui" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">桥层基础交互能力(对应 Capacitor 的 Core APIs):平台工具、插件可用性探测、JS console 转发(loggingBehavior)与原生主动事件(TriggerJSEventAsync)。</p>
+
+    <section class="panel">
+        <h2>平台与环境</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-env">读取平台信息</button>
+            </div>
+            <pre id="env-out"></pre>
+            <p class="hint">getPlatform() / isNativePlatform() / isPluginAvailable() / convertFileUri() —— 在浏览器中直接打开同样可用(web 实现)。Camera 未安装,用于演示 false 分支。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>console 转发(loggingBehavior)</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-log">console.log</button>
+                <button id="btn-warn" class="orange">console.warn</button>
+                <button id="btn-error" class="orange">console.error</button>
+            </div>
+            <p class="hint">原生桥把 console 转发到原生日志(IDE 诊断输出 / 平台控制台,前缀 [Napacitor][JS]);loggingBehavior = debug 时仅 Debug 构建转发,Web 本地输出始终保留。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>原生主动事件(TriggerJSEventAsync)</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-listen">开始监听</button>
+            </div>
+            <pre id="event-out"></pre>
+            <p class="hint">点击宿主窗口顶部的原生按钮(MainPage.xaml):「派发原生事件」触发 TriggerJSEventAsync,「读取 Web 资产」经 JS 同源通道读取 wwwroot 文件后回传 —— 验证 C# → Web 的主动交互通道(对应 Capacitor 的 triggerJSEvent)。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Napacitor } from '@napacitor/core';
+
+Napacitor.getPlatform();                // 'windows' / 'android' / 'ios' / 'web'
+Napacitor.isNativePlatform();           // 原生宿主中为 true
+Napacitor.isPluginAvailable('Battery');
+
+// 原生(C#)主动派发的事件,Web 侧普通 DOM 监听即可:
+//   await runtime.TriggerJSEventAsync("napacitor:tick", new { time = … });
+window.addEventListener('napacitor:tick', (e) => {
+  console.log('收到原生事件', e.detail);
+});</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

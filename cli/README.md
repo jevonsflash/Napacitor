@@ -8,6 +8,7 @@ Napacitor 的 **命令行工具**(`nap` 命令),对应 Capacitor 仓库中 `cli/
 |---|---|---|
 | `cap init` | `nap init [appId] [appName] [--web-dir]` | 写 napacitor.config.json(非交互,缺省有默认值) |
 | `cap add android` | `nap add maui` | 从 `assets/maui-template` 复制宿主模板并替换令牌;webDir 已构建时自动 sync |
+| `@capacitor/assets`(独立 npm 工具) | `nap assets [maui]` | 品牌资产:图标/启动屏/主题颜色 → 宿主(内置命令,MAUI Resizetizer 原生方案) |
 | `cap copy android` | `nap copy [maui]` | Web 产物 → 宿主 wwwroot + 宿主化改造 index.html |
 | `cap sync android` | `nap sync [maui]` | copy + 重新生成 napacitor.build.props |
 | `cap open android` | `nap open maui` | 系统默认方式打开宿主工程 |
@@ -32,6 +33,37 @@ Napacitor 的 **命令行工具**(`nap` 命令),对应 Capacitor 仓库中 `cli/
 
 这对应 Capacitor 在 Android 端由 WebViewLocalServer 注入 server 对象的做法 —— Napacitor 用"摘除脚本 + 原生按序导入"实现同等启动模型。
 
+## assets 的品牌资产生成(MAUI Resizetizer 原生方案)
+
+对应 Capacitor 生态的 `@capacitor/assets`(独立 npm 工具,自带 Node 图像处理管线),Napacitor 改为 **CLI 内置命令 + MAUI 原生 Resizetizer**:多平台位图由 `dotnet build` 构建时自动生成,CLI 只负责"源图 + 颜色"接入,零图像处理依赖。
+
+`napacitor.config.json` 的 `assets` 节:
+
+```json
+{
+  "assets": {
+    "sourceDir": "assets",
+    "icon": "icon.svg",
+    "iconForeground": "icon-fg.svg",
+    "splash": "splash.svg",
+    "iconColor": "#512BD4",
+    "splashColor": "#1D2951",
+    "colors": {
+      "PageBackgroundColor": "#1D2951",
+      "PrimaryTextColor": "White"
+    }
+  }
+}
+```
+
+`nap assets` 执行三步:
+
+1. **源图接入**:svg/png 拷入宿主 `Resources/AppIcon` 与 `Resources/Splash`(同名旧文件先清除,防换格式残留);未提供源图时保留模板默认图,仅更新颜色。支持约定查找(`assets/icon.svg`、`icon-fg.*` / `icon-foreground.*`、`splash.svg` / `splash.png`)与显式指定;
+2. **csproj 改写**:重写 `<MauiIcon>` / `<MauiSplashScreen>`(`Color` 属性,svg 启动图写 `BaseSize`)—— 各平台位图交给 [Resizetizer](https://learn.microsoft.com/dotnet/maui/user-interface/images/app-icons) 构建时生成,对应 Capacitor 由 `@capacitor/assets` 离线生成 PNG 的职责;
+3. **主题颜色注入**:`Colors.xaml` / `Styles.xaml` 以 `<!-- napacitor:assets-begin/end -->` 标记区块幂等重写,区块外可自由追加。`PageBackgroundColor` → ContentPage 背景样式、`PrimaryTextColor` → Label 文本色,其余自定义键仅写入 Colors.xaml 供 `DynamicResource` 引用。
+
+`nap add maui` 时模板中的 `__ICON_COLOR__` / `__SPLASH_COLOR__` 等占位符即按此配置替换(未配置 assets 节取默认品牌色 `#512BD4`),后续可随时 `nap assets` 幂等更新。
+
 ## 零 npm 依赖
 
 与 Capacitor CLI(fs-extra、minimist、@ionic/utils-* 等)不同,Napacitor CLI **零 npm 运行时依赖**(连 devDependencies 也没有):文件操作基于 `node:fs/promises`,子进程基于 `node:child_process`,argv 解析自实现,Node API 类型声明内置于 `src/typings.d.ts`。偏离点是有意为之,以 monorepo 自包含为优先。
@@ -49,8 +81,8 @@ cli/
 │   ├── colors.ts          # 轻量 ANSI 颜色
 │   ├── typings.d.ts       # 最小 Node API 类型声明(零 @types/node)
 │   ├── util/{fs,subprocess}.ts
-│   ├── tasks/{init,add,copy,sync,open,build,clean,run,list}.ts
-│   └── maui/{common,add,copy,update,open,build,clean,run}.ts   # 平台实现(镜像 cli/src/android/)
+│   ├── tasks/{init,add,assets,copy,sync,open,build,clean,run,list}.ts
+│   └── maui/{common,add,assets,copy,update,open,build,clean,run}.ts   # 平台实现(镜像 cli/src/android/)
 ├── assets/maui-template/  # 宿主模板(由 scripts/sync-maui-template.mjs 同步)
 ├── dist/                  # 构建产物(CJS,不入库;npm run build 生成)
 └── package.json           # bin: nap

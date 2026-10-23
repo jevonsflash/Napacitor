@@ -43,4 +43,16 @@ public static class NapacitorBridge
         Runtime.Listeners.RemoveAllListeners(pluginId);
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// JS console 转发入口(原生桥的 console 补丁调用,受 napacitor.config.json
+    /// 的 loggingBehavior 控制 —— 仅 NapacitorNative.log 置位后原生桥才会转发)。
+    /// level:debug / info / warn / error。
+    /// </summary>
+    [JSInvokable]
+    public static Task NAP_log(string level, string message)
+    {
+        NapacitorLogger.FromJavaScript(level, message);
+        return Task.CompletedTask;
+    }
 }

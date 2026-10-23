@@ -58,6 +58,13 @@ public sealed class NapacitorRuntime
     /// <summary>监听器注册表。</summary>
     public ListenerRegistry Listeners => _listeners;
 
+    /// <summary>
+    /// napacitor.config.json 根配置(对应 Capacitor 的 bridge.getConfig())。
+    /// 配置未加载或文件缺失时 <see cref="JsonElement.ValueKind"/> 为
+    /// <see cref="JsonValueKind.Undefined"/>,按需判断取值。
+    /// </summary>
+    public JsonElement AppConfig => _appConfig;
+
     /// <summary>当前平台字符串:android / ios / mac / windows。</summary>
     public static string PlatformName =>
         OperatingSystem.IsAndroid() ? "android" :
@@ -81,30 +88,32 @@ public sealed class NapacitorRuntime
 
         // ① 反射发现插件(对应 Capacitor Android 注解处理器生成的插件清单)
         _plugins.DiscoverPlugins();
-        Console.WriteLine($"[Napacitor] ① 插件发现完成:{string.Join(",", PluginNames)}");
+        NapacitorLogger.Info($"① 插件发现完成:{string.Join(",", PluginNames)}");
 
         // ② 注入 NapacitorNative 平台信息 + 原生桥(native-bridge)脚本
         await InjectNativeBridgeAsync(js);
-        Console.WriteLine("[Napacitor] ② 原生桥注入完成");
+        NapacitorLogger.Info("② 原生桥注入完成");
 
-        // ③ 读取 napacitor.config.json(由 nap copy 拷入 wwwroot;缺失容忍)
+        // ③ 读取 napacitor.config.json(由 nap copy 拷入 wwwroot;缺失容忍),
+        //    应用 loggingBehavior 并按需打开 JS console 转发
         await LoadAppConfigAsync(js);
-        Console.WriteLine("[Napacitor] ③ 应用配置加载完成");
+        await EnableJsLogForwardingAsync(js);
+        NapacitorLogger.Info("③ 应用配置加载完成(loggingBehavior 行为已应用)");
 
         // ④ 按序导入 Web 应用入口脚本
         var entries = options?.Entries ?? await LoadEntriesAsync(js);
-        Console.WriteLine($"[Napacitor] ④ 入口清单:{string.Join(",", entries)}");
+        NapacitorLogger.Info($"④ 入口清单:{string.Join(",", entries)}");
         foreach (var rawEntry in entries)
         {
             var entry = NormalizeEntry(rawEntry);
             try
             {
                 await js.InvokeAsync<IJSObjectReference>("import", entry);
-                Console.WriteLine($"[Napacitor] ④ 已导入入口脚本 {entry}");
+                NapacitorLogger.Info($"④ 已导入入口脚本 {entry}");
             }
             catch (JSException ex)
             {
-                Console.WriteLine($"[Napacitor] ④ 导入 {entry} 失败:{ex.Message}");
+                NapacitorLogger.Warn($"④ 导入 {entry} 失败:{ex.Message}");
                 throw new NapacitorException(
                     NapacitorException.Error,
                     $"导入入口脚本 {entry} 失败:{ex.Message}", ex);
@@ -130,8 +139,7 @@ public sealed class NapacitorRuntime
             }
             catch (JSException ex)
             {
-                System.Diagnostics.Debug.WriteLine(
-                    $"[Napacitor] 事件 {pluginId}.{eventName} 分发失败:{ex.Message}");
+                NapacitorLogger.Warn($"事件 {pluginId}.{eventName} 分发失败:{ex.Message}");
             }
         }
     }
@@ -139,6 +147,79 @@ public sealed class NapacitorRuntime
     /// <summary>某插件某事件的 JS 监听器数量(供插件惰性订阅)。</summary>
     public int GetListenerCount(string pluginId, string eventName) =>
         _listeners.GetCount(pluginId, eventName);
+
+    /// <summary>
+    /// 向 Web 派发自定义 DOM 事件(对应 Capacitor 的 bridge.triggerJSEvent):
+    /// 在 window / document 上 dispatchEvent(new CustomEvent(…))。
+    /// dataJson 须为序列化的 JSON 字符串(与 Capacitor 同约定),JS 侧经
+    /// JSON.parse 后作为事件 detail;解析失败时以原始字符串传入。
+    /// 插件自身的原生事件请优先用 NotifyListeners(插件事件管线);
+    /// 此通道面向插件之外的原生 → Web 广播(宿主代码、后台任务通知前端等)。
+    /// </summary>
+    public async Task TriggerJSEventAsync(string eventName, string target = "window", string? dataJson = null)
+    {
+        var js = _js;
+        if (js is null)
+        {
+            return;
+        }
+        try
+        {
+            await js.InvokeVoidAsync("eval", BuildJSEventScript(eventName, target, dataJson));
+        }
+        catch (JSException ex)
+        {
+            NapacitorLogger.Warn($"事件 {eventName} 派发失败:{ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// TriggerJSEventAsync 的便捷重载:任意可序列化对象直接作为事件
+    /// detail(target 取 window),内部序列化后走主签名。
+    /// </summary>
+    public Task TriggerJSEventAsync(string eventName, object? data)
+    {
+        var dataJson = data is null ? null : JsonSerializer.Serialize(data, NapacitorJson.Options);
+        return TriggerJSEventAsync(eventName, "window", dataJson);
+    }
+
+    /// <summary>
+    /// 构造事件派发脚本。事件名与数据均经 JSON 序列化为合法 JS 字符串字面量
+    /// 后嵌入 —— 用户数据只成为字面量、不参与代码语义(杜绝注入);
+    /// detail 的 JSON.parse 失败时以原始字符串传入;整段 try/catch,
+    /// 派发异常不打断原生流程。
+    /// </summary>
+    private static string BuildJSEventScript(string eventName, string target, string? dataJson)
+    {
+        var nameLiteral = JsonSerializer.Serialize(eventName, NapacitorJson.Options);
+        var dataLiteral = dataJson is null ? null : JsonSerializer.Serialize(dataJson, NapacitorJson.Options);
+        var targetExpr = string.Equals(target, "document", StringComparison.OrdinalIgnoreCase)
+            ? "document"
+            : "window";
+        var detailStmt = dataLiteral is null
+            ? string.Empty
+            : "var d=" + dataLiteral + ";try{d=JSON.parse(d)}catch(e){}o.detail=d;";
+        return
+            "(function(){" +
+            "try{" +
+            "var o={};" +
+            detailStmt +
+            targetExpr + ".dispatchEvent(new CustomEvent(" + nameLiteral + ",o));" +
+            "}catch(e){}" +
+            "})();";
+    }
+
+    /// <summary>
+    /// 经 WebView 同源通道读取 wwwroot 静态文本(承担 Capacitor iOS
+    /// localURL(fromWebURL:) 的职责:C# 侧按 Web 的 URL 规则访问静态资源;
+    /// 相对路径以 wwwroot 为根,Android 等资产打包进 apk 的平台同样可读)。
+    /// 资源缺失或读取失败返回 null。
+    /// </summary>
+    public Task<string?> ReadAssetTextAsync(string url)
+    {
+        var js = _js;
+        return js is null ? Task.FromResult<string?>(null) : FetchTextAsync(js, url);
+    }
 
     /// <summary>napacitor.config.json 中 plugins.{pluginId} 配置节。</summary>
     internal JsonElement GetPluginConfig(string pluginId)
@@ -186,6 +267,7 @@ public sealed class NapacitorRuntime
             $"platform:{JsonSerializer.Serialize(PlatformName)}," +
             $"version:'{Version}'," +
             $"plugins:[{pluginList}]," +
+            $"log:false," +
             $"__pending:[]," +
             $"__emit:function(cb,json){{this.__pending.push({{callbackId:cb,dataJson:json}});}}," +
             $"__fetchText:function(){{return Promise.resolve(null);}}" +
@@ -221,11 +303,46 @@ public sealed class NapacitorRuntime
         try
         {
             using var doc = JsonDocument.Parse(json);
-            _appConfig = doc.RootElement.Clone();
+            var root = doc.RootElement.Clone();
+            _appConfig = root;
+            ApplyLoggingBehavior(root);
         }
         catch (JsonException ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[Napacitor] napacitor.config.json 解析失败:{ex.Message}");
+            NapacitorLogger.Warn($"napacitor.config.json 解析失败:{ex.Message}");
+        }
+    }
+
+    /// <summary>应用配置根对象中的 loggingBehavior(缺失/非法时由日志器回退 Debug)。</summary>
+    private static void ApplyLoggingBehavior(JsonElement root)
+    {
+        if (root.ValueKind == JsonValueKind.Object &&
+            root.TryGetProperty("loggingBehavior", out var value) &&
+            value.ValueKind == JsonValueKind.String)
+        {
+            NapacitorLogger.Configure(value.GetString());
+        }
+    }
+
+    /// <summary>
+    /// loggingBehavior 允许输出时,打开原生桥的 JS console 转发开关
+    /// (NapacitorNative.log,见 napacitor-native-bridge 的 console 补丁)。
+    /// 置位发生在 ④ 导入入口脚本之前,Web 应用的 console 输出即可被转发。
+    /// </summary>
+    private static async Task EnableJsLogForwardingAsync(IJSRuntime js)
+    {
+        if (!NapacitorLogger.IsEnabled)
+        {
+            return;
+        }
+        try
+        {
+            await js.InvokeVoidAsync(
+                "eval", "window.NapacitorNative&&(window.NapacitorNative.log=true)");
+        }
+        catch (JSException ex)
+        {
+            NapacitorLogger.Warn($"打开 JS console 转发失败:{ex.Message}");
         }
     }
 

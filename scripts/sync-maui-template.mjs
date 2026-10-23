@@ -18,6 +18,22 @@ if (!existsSync(src)) {
   process.exit(1);
 }
 
+// 模板可能被 VS 打开过而残留 .vs / bin / obj / *.user(均为 gitignored 的本地产物),
+// 不属于模板内容,且 .vs 内文件常被 IDE 锁定导致拷贝 EBUSY —— 一律跳过
+const EXCLUDED_DIR_NAMES = new Set(['.vs', 'bin', 'obj']);
+
+function isTemplateAsset(target) {
+  const rel = path.relative(src, target);
+  if (rel === '') {
+    return true;
+  }
+  const parts = rel.split(path.sep);
+  if (parts.some((part) => EXCLUDED_DIR_NAMES.has(part))) {
+    return false;
+  }
+  return !parts[parts.length - 1].endsWith('.user');
+}
+
 function countFiles(dir) {
   let count = 0;
   for (const name of readdirSync(dir)) {
@@ -33,6 +49,6 @@ function countFiles(dir) {
 
 rmSync(dest, { recursive: true, force: true });
 mkdirSync(path.dirname(dest), { recursive: true });
-cpSync(src, dest, { recursive: true });
+cpSync(src, dest, { recursive: true, filter: isTemplateAsset });
 
 console.log(`✓ maui-template → cli/assets/maui-template(${countFiles(dest)} 个文件)`);

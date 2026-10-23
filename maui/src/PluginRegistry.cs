@@ -88,8 +88,7 @@ public sealed class PluginRegistry
         var ctor = type.GetConstructor(Type.EmptyTypes);
         if (ctor is null)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"[Napacitor] 跳过插件 {type.FullName}:缺少公共无参构造函数");
+            NapacitorLogger.Warn($"跳过插件 {type.FullName}:缺少公共无参构造函数");
             return null;
         }
 

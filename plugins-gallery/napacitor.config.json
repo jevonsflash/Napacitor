@@ -2,6 +2,7 @@
   "appId": "com.napacitor.gallery",
   "appName": "Plugins Gallery",
   "webDir": "src",
+  "loggingBehavior": "debug",
   "maui": {
     "hostDir": "maui"
   }

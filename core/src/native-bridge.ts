@@ -15,6 +15,8 @@ interface NapacitorNativeInfo {
   platform: string;
   version: string;
   plugins: string[];
+  /** loggingBehavior 允许输出时由 C# 置 true,console 补丁随即开始转发。 */
+  log?: boolean;
   __pending?: Array<{ callbackId: string; dataJson: string }>;
   __emit?: (callbackId: string, dataJson: string) => void;
   __fetchText?: (url: string) => Promise<string | null>;
@@ -216,6 +218,61 @@ function bindNativeBridge(): void {
     for (const item of queued) {
       emit(item.callbackId, item.dataJson);
     }
+  }
+  installConsoleForwarding();
+}
+
+/** console 补丁是否已安装(模块内仅装一次)。 */
+let consoleForwarded = false;
+
+/**
+ * 安装 console → 原生日志转发(与 Capacitor 的 console 重定向对应)。
+ * 仅原生环境安装(Web/PWA 不动 console);本地输出始终保留;
+ * NapacitorNative.log === true(napacitor.config.json 的 loggingBehavior
+ * 允许输出,C# 读取配置后置位)后开始转发;转发 fire-and-forget,失败静默。
+ */
+function installConsoleForwarding(): void {
+  if (consoleForwarded || getNativeInfo() === undefined) {
+    return;
+  }
+  consoleForwarded = true;
+
+  const nativeConsole = console;
+  const forward =
+    (level: string, original: (...args: unknown[]) => void) =>
+    (...args: unknown[]): void => {
+      original.apply(nativeConsole, args);
+      const info = getNativeInfo();
+      const dotnet = getDotNet();
+      if (!info || info.log !== true || !dotnet) {
+        return;
+      }
+      try {
+        const text = args.map(stringifyArg).join(' ');
+        void dotnet
+          .invokeMethodAsync(NAPACITOR_ASSEMBLY, 'NAP_log', level, text)
+          .catch(() => undefined);
+      } catch {
+        // 转发失败静默,不影响本地输出
+      }
+    };
+
+  console.log = forward('info', nativeConsole.log);
+  console.info = forward('info', nativeConsole.info);
+  console.debug = forward('debug', nativeConsole.debug);
+  console.warn = forward('warn', nativeConsole.warn);
+  console.error = forward('error', nativeConsole.error);
+}
+
+/** console 参数 → 文本(对象 JSON 序列化,不可序列化时退回 String)。 */
+function stringifyArg(arg: unknown): string {
+  if (typeof arg === 'string') {
+    return arg;
+  }
+  try {
+    return JSON.stringify(arg) ?? String(arg);
+  } catch {
+    return String(arg);
   }
 }
 

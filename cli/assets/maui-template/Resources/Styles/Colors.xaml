@@ -4,7 +4,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <Color x:Key="PageBackgroundColor">#512BBD</Color>
-    <Color x:Key="PrimaryTextColor">White</Color>
+    <!-- napacitor:assets-begin(由 `nap assets` 依据 napacitor.config.json 生成/更新;区块外可自由追加) -->
+    <Color x:Key="PageBackgroundColor">__PAGE_BACKGROUND_COLOR__</Color>
+    <Color x:Key="PrimaryTextColor">__PRIMARY_TEXT_COLOR__</Color>
+    <!-- napacitor:assets-end -->
 
 </ResourceDictionary>

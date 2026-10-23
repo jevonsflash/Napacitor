@@ -11,6 +11,7 @@ import { readTextFile } from './util/fs';
 import { PLATFORM_NAME } from './maui/common';
 import { initCommand } from './tasks/init';
 import { addCommand } from './tasks/add';
+import { assetsCommand } from './tasks/assets';
 import { copyCommand } from './tasks/copy';
 import { syncCommand } from './tasks/sync';
 import { openCommand } from './tasks/open';
@@ -34,6 +35,7 @@ const HELP = `Napacitor CLI —— 复刻 Capacitor 的跨平台运行时 CLI(�
 命令:
   init [appId] [appName] [--web-dir <dir>]   初始化应用,写入 napacitor.config.json
   add <maui>                                  从内置模板生成 MAUI 宿主工程
+  assets [maui]                               应用图标/启动屏/主题颜色注入宿主(Resizetizer)
   copy [maui]                                 复制 Web 构建产物到宿主 wwwroot 并宿主化改造
   sync [maui]                                 copy + 重新生成 napacitor.build.props
   open <maui>                                 用系统默认方式打开宿主工程
@@ -108,6 +110,11 @@ export async function run(argv: string[]): Promise<void> {
     case 'add':
       resolvePlatform(args);
       await addCommand(await loadConfig(process.cwd()));
+      break;
+
+    case 'assets':
+      resolvePlatform(args);
+      await assetsCommand(await loadConfig(process.cwd()));
       break;
 
     case 'copy':

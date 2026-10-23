@@ -36,6 +36,7 @@
 | capacitor-plugins 仓 `plugins/<x>/` | `plugins/<x>/` | 5 个插件(device/clipboard/haptics/share/battery) |
 | `capacitor.settings.gradle` / `capacitor.build.gradle` | `napacitor.build.props` | nap sync 生成的 MSBuild 工程引用 |
 | `cap add/copy/sync/open/run/ls` | `nap add/copy/sync/open/build/clean/run/list` | 工作流同形(+build/clean 为面向 dotnet 的命令传递) |
+| `@capacitor/assets`(独立 npm 工具) | `nap assets`(CLI 内置命令) | 品牌资产生成:图标/启动屏/主题颜色(MAUI Resizetizer 构建时出位图,零图像依赖) |
 | native-bridge.js 注入 WebView | napacitor-native-bridge.js 由 C# eval 注入 | 同一链路 |
 | `lerna.json` / `nx.json` | 无 | 0.1 阶段用 npm workspaces + 根 scripts 即可 |
 
@@ -55,6 +56,7 @@ npx nap init com.example.app "My App" --web-dir dist
 # ② 构建前端产物后,生成宿主并同步
 npm run build            # 产物输出到 dist/
 npx nap add maui         # 生成 maui/ 宿主工程(自动 sync)
+npx nap assets           # 可选:配置 assets 节后注入品牌图标/启动屏/主题颜色
 # 之后每次改动前端:
 npx nap sync             # copy + 重新生成 napacitor.build.props
 
@@ -79,8 +81,10 @@ await Battery.addListener('batteryStatusChange', (info) => { … });
 
 1. MAUI Blazor 宿主由模板生成:BlazorWebView 加载 `wwwroot/index.html`,根组件 `Main.razor` 挂到 `#napacitor-root`;
 2. `Main.razor` 的 `OnAfterRenderAsync(firstRender)` 调用 `NapacitorRuntime.StartAsync(JS)`;
-3. 运行时:反射发现 `[NapacitorPlugin]` 插件 → eval 注入 `window.NapacitorNative` 平台信息桩 + 内嵌 napacitor-native-bridge.js(接管 `window.Napacitor`)→ 经 `__fetchText` 读 napacitor.config.json → 按 `napacitor.entries.json` 顺序 `import()` Web 入口脚本;
+3. 运行时:反射发现 `[NapacitorPlugin]` 插件 → eval 注入 `window.NapacitorNative` 平台信息桩 + 内嵌 napacitor-native-bridge.js(接管 `window.Napacitor`,并按需把 console 转发到原生日志)→ 经 `__fetchText` 读 napacitor.config.json(应用 `loggingBehavior` 并打开 JS console 转发)→ 按 `napacitor.entries.json` 顺序 `import()` Web 入口脚本;
 4. 插件调用:`window.DotNet.invokeMethodAsync('Napacitor', 'NAP_invoke', pluginId, method, argsJson)` → 信封 `{"ok":true,"data":…}`;事件经 `NapacitorNative.__emit(callbackId, dataJson)` 回推。
+
+`loggingBehavior`(语义同 Capacitor):`none` 永不输出 / `debug` 仅 Debug 构建(缺省)/ `production` 始终输出,同时覆盖 C# 运行时日志与 JS console 转发(输出到 IDE 诊断与平台控制台)。
 
 ## 插件开发指南
 
@@ -101,6 +105,7 @@ C# 侧要点:
 - 类标 `[NapacitorPlugin("Device")]`、继承 `NapacitorPluginBase`、公共方法标 `[NapacitorMethod]` —— **零注册**:运行时按程序集名前缀 `Napacitor*` 反射扫描自动发现(对应 Capacitor Android 注解处理器);
 - 方法参数:0 个、1 个强类型 DTO(camelCase 自动反序列化)或 1 个 `NapacitorCall`(松散访问);JS camelCase ↔ C# PascalCase 忽略大小写匹配;
 - 事件:`NotifyListeners(eventName, data)` 推送;首个监听器到来时 `OnListenerAdded` 订阅原生源、最后一个离开时 `OnListenerRemoved` 退订(参见 `plugins/battery`);
+- 原生 → Web 广播:`TriggerJSEventAsync(name, target, data)`(对应 Capacitor 的 `triggerJSEvent`,JS 以 `window.addEventListener` 接收);根配置经 `AppConfig` 访问(对应 `getConfig`),详见 `maui/README.md` 的 Core APIs;
 - 不可用功能抛 `NotImplemented(...)` → JS 侧收到 `NOT_IMPLEMENTED` 的 `NapacitorException`。
 
 ## 内置插件
