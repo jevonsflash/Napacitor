@@ -84,5 +84,80 @@ window.addEventListener('napacitor:download', (e) => {
 
 数据须为序列化 JSON 字符串(与 Capacitor 同约定),JS 侧自动 `JSON.parse` 为事件 `detail`,解析失败时以原始字符串传入;事件名与数据均经 JSON 字面量嵌入脚本,无注入风险。
 
+### 宿主原生按钮验证(完整示例)
+
+宿主工程由 `nap add maui` 生成、不入仓库,这里的示例代码供宿主按需复制。若想在**原生层**验证 C# → Web 通道,可在承载 `BlazorWebView` 的 `MainPage.xaml` 顶部加一条原生按钮栏,点击时经 `TriggerJSEventAsync` / `ReadAssetTextAsync` 与 Web 交互(Plugins Gallery 即此做法):
+
+```xaml
+<Grid RowDefinitions="Auto,*">
+    <!-- 原生按钮栏:演示 C# → Web 交互(TriggerJSEventAsync / ReadAssetTextAsync) -->
+    <HorizontalStackLayout Grid.Row="0" Padding="10,8" Spacing="8">
+        <Button Text="派发原生事件(napacitor:tick)"
+                Clicked="OnDispatchEvent" />
+        <Button Text="读取 Web 资产(napacitor.config.json)"
+                Clicked="OnReadAsset" />
+    </HorizontalStackLayout>
+
+    <BlazorWebView Grid.Row="1" HostPage="wwwroot/index.html">
+        <BlazorWebView.RootComponents>
+            <RootComponent Selector="#napacitor-root"
+                             ComponentType="{x:Type local:Main}" />
+        </BlazorWebView.RootComponents>
+    </BlazorWebView>
+</Grid>
+```
+
+后台代码(注意 `using Napacitor;`):
+
+```csharp
+using Napacitor;
+
+namespace NapacitorHost;
+
+public partial class MainPage : ContentPage
+{
+    public MainPage()
+    {
+        InitializeComponent();
+    }
+
+    /// <summary>按钮:经 TriggerJSEventAsync 向 Web 派发 DOM 事件(对应 Capacitor triggerJSEvent)。</summary>
+    private async void OnDispatchEvent(object sender, EventArgs e)
+    {
+        var runtime = NapacitorRuntime.Current;
+        if (runtime is null)
+        {
+            return;
+        }
+
+        await runtime.TriggerJSEventAsync("napacitor:tick", new
+        {
+            time = DateTime.Now.ToString("O"),
+            message = "来自 MainPage.xaml 的原生按钮",
+        });
+    }
+
+    /// <summary>按钮:经 JS 同源通道读取 Web 资产文本,再以事件形式回传页面(对应 iOS localURL 的读取场景)。</summary>
+    private async void OnReadAsset(object sender, EventArgs e)
+    {
+        var runtime = NapacitorRuntime.Current;
+        if (runtime is null)
+        {
+            return;
+        }
+
+        var text = await runtime.ReadAssetTextAsync("napacitor.config.json");
+        await runtime.TriggerJSEventAsync("napacitor:asset", new
+        {
+            url = "napacitor.config.json",
+            length = text?.Length ?? 0,
+            preview = text is null ? null : (text.Length > 120 ? text[..120] + "…" : text),
+        });
+    }
+}
+```
+
+Web 侧以普通 DOM 监听接收:`window.addEventListener('napacitor:tick', …)` 与 `window.addEventListener('napacitor:asset', …)`,事件数据在 `e.detail`。
+
 Web 侧工具(`@napacitor/core` 的 `Napacitor` 对象,对应 Capacitor 的 Web API)已内置:`getPlatform()`、`isNativePlatform()`、`isPluginAvailable(name)`、`convertFileUri(uri)`。其中 `convertFileUri` 直接返回原 URI:MAUI Blazor 的 WebView 与静态资产同源,不需要 Capacitor 那种 `file://` → `http://localhost` 的协议改写;iOS 的 `portablePath(fromLocalURL:)` 同理 —— 相对路径在 WebView 直接可用,反向(C# 读 wwwroot)用 `ReadAssetTextAsync` 借道。
 

@@ -8,7 +8,9 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist/",
-    "maui/"
+    "maui/",
+    "!maui/bin/",
+    "!maui/obj/"
   ],
   "scripts": {
     "build": "tsc",
