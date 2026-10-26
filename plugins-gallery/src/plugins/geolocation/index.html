@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Geolocation · Napacitor</title>
+
+</head>
+<body>
+    <h1>Geolocation <code>@napacitor/geolocation</code></h1>
+    <p class="meta">
+        <span>分组:传感器 · 注册名:Geolocation</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/geolocation" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">GPS 定位:一次性获取、持续监听与权限管理。对应 .NET MAUI Geolocation / Permissions API(桌面平台通常无 GPS,定位来源为 IP/Wi-Fi,精度较低)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>高精度 <input id="in-accuracy" type="checkbox"></label>
+                <label>超时(毫秒) <input id="in-timeout" type="number" value="10000" min="1000"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-check" class="gray">检查权限</button>
+                <button id="btn-request" class="gray">请求权限</button>
+                <button id="btn-current" class="green">获取当前位置</button>
+                <button id="btn-watch" class="orange">开始监听</button>
+                <button id="btn-stop" class="purple">停止监听</button>
+            </div>
+            <div id="output" class="output">定位结果将显示在这里</div>
+            <p class="hint">监听使用 position / error 两个事件推送;MAUI 的持续定位为单会话,同一时刻只能有一个 watch。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Geolocation } from '@napacitor/geolocation';
+
+// 一次性获取当前位置
+const position = await Geolocation.getCurrentPosition({
+  enableHighAccuracy: true,
+  timeout: 10000,
+});
+console.log(position.coords.latitude, position.coords.longitude);
+
+// 持续监听(回调式,返回 ID 供 clearWatch 使用)
+const id = await Geolocation.watchPosition(
+  { enableHighAccuracy: true },
+  (position, err) => {
+    if (err) return console.error(err.code, err.message);
+    console.log(position.coords);
+  },
+);
+await Geolocation.clearWatch({ id });</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

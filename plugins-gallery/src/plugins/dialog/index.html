@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Dialog · Napacitor</title>
+
+</head>
+<body>
+    <h1>Dialog <code>@napacitor/dialog</code></h1>
+    <p class="meta">
+        <span>分组:交互反馈 · 注册名:Dialog</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/dialog" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">原生对话框:alert / prompt / confirm。映射 MAUI Page.DisplayAlert / DisplayPromptAsync(Windows 上由 MAUI 落到 ContentDialog)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>标题 <input id="in-title" type="text" value="Napacitor Dialog"></label>
+                <label>消息 <input id="in-message" type="text" value="这是一个原生对话框"></label>
+                <label>占位提示(prompt) <input id="in-placeholder" type="text" value="请输入内容"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-alert" class="green">alert()</button>
+                <button id="btn-confirm" class="purple">confirm()</button>
+                <button id="btn-prompt" class="orange">prompt()</button>
+            </div>
+            <div id="output" class="output">confirm / prompt 的返回结果将显示在这里</div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Dialog } from '@napacitor/dialog';
+
+// 警告框
+await Dialog.alert({
+  title: '提示',
+  message: '这是一个原生对话框',
+  buttonTitle: '知道了',
+});
+
+// 确认框(返回 { value: boolean })
+const { value } = await Dialog.confirm({
+  title: '删除',
+  message: '确定要删除吗?',
+});
+
+// 输入框(返回 { value, cancelled })
+const result = await Dialog.prompt({
+  title: '重命名',
+  message: '请输入新名称',
+  inputPlaceholder: '名称',
+});</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>App Actions · Napacitor</title>
+
+</head>
+<body>
+    <h1>App Actions <code>@napacitor/app-actions</code></h1>
+    <p class="meta">
+        <span>分组:系统功能 · 注册名:AppActions</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/app-actions" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">应用图标快捷方式(Android App Shortcuts / iOS 主屏 Quick Actions / Windows 任务栏跳转列表——仅 MSIX 打包应用)。对应 .NET MAUI AppActions API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>快捷方式(每行一个,id|标题|副标题) <textarea id="in-actions" rows="3">inbox|收件箱|查看新邮件
+compose|写邮件
+search|搜索</textarea></label>
+            </div>
+            <div class="btns">
+                <button id="btn-supported" class="gray">检测支持 isSupported()</button>
+                <button id="btn-set" class="green">设置 set()</button>
+                <button id="btn-get" class="purple">读取 get()</button>
+                <button id="btn-listen" class="orange">监听点击事件</button>
+            </div>
+            <div id="output" class="output">结果将显示在这里(设置后长按 / 右键应用图标可见快捷方式)</div>
+            <p class="hint">appActionPerformed 事件需宿主在 MauiProgram 的 ConfigureEssentials 中转发(essentials.OnAppAction(action => AppActionsPlugin.NotifyActionPerformed(action))),Android 还需 MainActivity 的 IntentFilter,详见插件 README;Windows 未打包(WindowsPackageType=None)应用不支持。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { AppActions } from '@napacitor/app-actions';
+
+// 检查平台支持后设置快捷方式(整体替换)
+const { supported } = await AppActions.isSupported();
+if (supported) {
+  await AppActions.set({
+    actions: [
+      { id: 'inbox', title: '收件箱', subtitle: '查看新邮件' },
+      { id: 'compose', title: '写邮件' },
+    ],
+  });
+}
+
+// 读取当前快捷方式
+const { actions } = await AppActions.get();
+
+// 响应快捷方式点击(需宿主转发,见 README)
+await AppActions.addListener('appActionPerformed', ({ action }) => {
+  console.log('触发了快捷方式:', action.id);
+});</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

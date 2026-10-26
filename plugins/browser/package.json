@@ -1,0 +1,13 @@
+{
+  "name": "@napacitor/browser",
+  "version": "0.1.2-beta.4",
+  "description": "Napacitor Browser 插件(内嵌浏览器,封装 MAUI Browser API)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/", "maui/", "!maui/bin/", "!maui/obj/"],
+  "scripts": { "build": "tsc", "type-check": "tsc --noEmit" },
+  "peerDependencies": { "@napacitor/core": "^0.1.0" },
+  "devDependencies": { "@napacitor/core": "^0.1.0", "typescript": "~5.4.5" }
+}

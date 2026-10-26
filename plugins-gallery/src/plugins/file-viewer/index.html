@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>File Viewer · Napacitor</title>
+
+</head>
+<body>
+    <h1>File Viewer <code>@napacitor/file-viewer</code></h1>
+    <p class="meta">
+        <span>分组:系统功能 · 注册名:FileViewer</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/file-viewer" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">用系统查看器打开文件。映射 MAUI Launcher.OpenAsync(Android:Intent.ACTION_VIEW / Windows:Shell 默认打开方式)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>本地绝对路径 <input id="in-path" type="text" placeholder="例如 C:\Users\me\Documents\sample.pdf"></label>
+                <label>包内资源路径(Resources/Raw 下) <input id="in-resource" type="text" value="AboutAssets.txt"></label>
+                <label>远程地址 <input id="in-url" type="text" value="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-local" class="green">打开本地文件</button>
+                <button id="btn-resource" class="purple">打开包内资源</button>
+                <button id="btn-url" class="orange">打开远程文件</button>
+            </div>
+            <p class="hint">包内资源会先复制到缓存目录再交给查看器(打包资源无法直接以路径形式提供给外部应用);远程地址交由系统浏览器/下载器接管,不会自动下载后弹出查看器。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { FileViewer } from '@napacitor/file-viewer';
+
+// 本地绝对路径
+await FileViewer.openDocumentFromLocalPath({
+  path: '/storage/emulated/0/Download/sample.pdf',
+});
+
+// 应用包内资源(Resources/Raw 下的相对路径)
+await FileViewer.openDocumentFromResources({
+  path: 'docs/sample.pdf',
+});
+
+// 远程文件(交由系统浏览器/下载器处理)
+await FileViewer.openDocumentFromUrl({
+  url: 'https://example.com/sample.pdf',
+});</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

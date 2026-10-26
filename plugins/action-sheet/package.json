@@ -1,0 +1,13 @@
+{
+  "name": "@napacitor/action-sheet",
+  "version": "0.1.2-beta.3",
+  "description": "Napacitor ActionSheet 插件(原生操作表,映射 MAUI Page.DisplayActionSheet)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/", "maui/", "!maui/bin/", "!maui/obj/"],
+  "scripts": { "build": "tsc", "type-check": "tsc --noEmit" },
+  "peerDependencies": { "@napacitor/core": "^0.1.0" },
+  "devDependencies": { "@napacitor/core": "^0.1.0", "typescript": "~5.4.5" }
+}

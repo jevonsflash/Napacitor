@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Preferences · Napacitor</title>
+
+</head>
+<body>
+    <h1>Preferences <code>@napacitor/preferences</code></h1>
+    <p class="meta">
+        <span>分组:数据交互 · 注册名:Preferences</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/preferences" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">键值对持久化存储(仅字符串,复杂对象请自行 JSON.stringify)。对应 .NET MAUI Preferences API(iOS:UserDefaults / Android:SharedPreferences / Windows:ApplicationData)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>存储组(留空为默认组) <input id="in-group" type="text" placeholder="例如 settings"></label>
+                <label>键 <input id="in-key" type="text" value="theme"></label>
+                <label>值 <input id="in-value" type="text" value="dark"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-configure" class="gray">切换存储组</button>
+                <button id="btn-set" class="green">写入 set()</button>
+                <button id="btn-get" class="purple">读取 get()</button>
+                <button id="btn-remove">删除 remove()</button>
+                <button id="btn-clear" class="orange">清空 clear()</button>
+            </div>
+            <p class="hint">MAUI 原生不支持枚举键,故不提供 keys();切换存储组后,后续读写/清空均作用于该组。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Preferences } from '@napacitor/preferences';
+
+// 切换到指定存储组(可选)
+await Preferences.configure({ group: 'settings' });
+
+// 写入 / 读取 / 删除
+await Preferences.set({ key: 'theme', value: 'dark' });
+const { value } = await Preferences.get({ key: 'theme' });
+await Preferences.remove({ key: 'theme' });
+
+// 清空当前组
+await Preferences.clear();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Action Sheet · Napacitor</title>
+
+</head>
+<body>
+    <h1>Action Sheet <code>@napacitor/action-sheet</code></h1>
+    <p class="meta">
+        <span>分组:交互反馈 · 注册名:ActionSheet</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/action-sheet" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">原生操作表(底部弹出的选项菜单)。映射 MAUI Page.DisplayActionSheet;style 仅 iOS 生效,其余平台忽略。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>标题 <input id="in-title" type="text" value="选择一个操作"></label>
+                <label>选项(逗号分隔,将映射为按钮) <input id="in-options" type="text" value="拍照,从相册选择,从文件选择"></label>
+                <label>允许取消 <input id="in-cancelable" type="checkbox" checked></label>
+            </div>
+            <div class="btns">
+                <button id="btn-show" class="green">显示操作表 showActions()</button>
+            </div>
+            <div id="output" class="output">选择结果将显示在这里</div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { ActionSheet, ActionSheetButtonStyle } from '@napacitor/action-sheet';
+
+const { index, canceled } = await ActionSheet.showActions({
+  title: '选择一个操作',
+  options: [
+    { title: '拍照' },
+    { title: '从相册选择' },
+    { title: '删除', style: ActionSheetButtonStyle.Destructive }, // 仅 iOS 生效
+  ],
+  cancelable: true, // 显示取消按钮
+});
+
+if (!canceled) {
+  console.log('选择了第', index, '项');
+}</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

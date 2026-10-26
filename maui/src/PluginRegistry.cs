@@ -338,10 +338,31 @@ public sealed class PluginRegistry
         }
     }
 
+    /// <summary>
+    /// 取 Task&lt;T&gt; 的结果。
+    ///
+    /// async 方法返回的实例是编译器内部派生类型
+    /// (AsyncStateMachineBox&lt;TResult, TStateMachine&gt;),其
+    /// GetGenericTypeDefinition() 并非 typeof(Task&lt;&gt;),直接判等会漏掉所有
+    /// async Task&lt;T&gt; 方法(结果变 null),故沿基类链查找 Task&lt;T&gt;;
+    /// 非泛型 async Task 的基类是 Task&lt;VoidTaskResult&gt;,需排除以免回传占位值。
+    /// </summary>
     private static object? ExtractTaskResult(Task task)
     {
-        var type = task.GetType();
-        if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(Task<>))
+        Type? type = task.GetType();
+        while (type is not null &&
+               !(type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>)))
+        {
+            type = type.BaseType;
+        }
+        if (type is null)
+        {
+            return null;
+        }
+
+        var resultType = type.GetGenericArguments()[0];
+        if (resultType == typeof(void) ||
+            resultType.FullName == "System.Threading.Tasks.VoidTaskResult")
         {
             return null;
         }

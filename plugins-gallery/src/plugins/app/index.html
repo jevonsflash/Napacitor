@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>App · Napacitor</title>
+
+</head>
+<body>
+    <h1>App <code>@napacitor/app</code></h1>
+    <p class="meta">
+        <span>分组:运行时 · 注册名:App</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/app" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">应用生命周期(appStateChange / pause / resume)、返回键、深链、退出与语言。映射 MAUI Window 生命周期事件 + Application.Quit + CultureInfo。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-state" class="gray">应用状态 getState()</button>
+                <button id="btn-language" class="gray">应用语言 getAppLanguage()</button>
+                <button id="btn-launch" class="gray">启动链接 getLaunchUrl()</button>
+                <button id="btn-listen" class="green">开始监听生命周期</button>
+                <button id="btn-exit" class="orange">退出应用 exitApp()</button>
+            </div>
+            <div id="output" class="output">生命周期事件日志将显示在这里(把应用切到后台再切回试试)</div>
+            <p class="hint">appUrlOpen / backButton 事件需宿主模板转发(深度链接注册 URL scheme、Android 返回键重写 OnBackPressed),详见插件 README;exitApp 在 Windows/macOS 有效,Android/iOS 系统不鼓励程序化退出。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { App } from '@napacitor/app';
+
+// 应用前后台切换
+await App.addListener('appStateChange', ({ isActive }) => {
+  console.log(isActive ? '回到前台' : '进入后台');
+});
+await App.addListener('pause', () => console.log('pause'));
+await App.addListener('resume', () => console.log('resume'));
+
+// 应用状态 / 语言 / 启动深链
+const state = await App.getState();
+const { value } = await App.getAppLanguage();
+const { url } = await App.getLaunchUrl();
+
+// 退出应用(Windows/macOS)
+await App.exitApp();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

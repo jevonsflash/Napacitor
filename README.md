@@ -33,7 +33,7 @@
 | `android-template/` | `maui-template/` | `nap add maui` 的宿主模板 |
 | `core/` = `@capacitor/core` | `core/` = `@napacitor/core` | TS 核心(native-bridge + web 运行时) |
 | `cli/` = `@capacitor/cli` | `cli/` = `@napacitor/cli` | `nap` 命令 |
-| capacitor-plugins 仓 `plugins/<x>/` | `plugins/<x>/` | 5 个插件(device/clipboard/haptics/share/battery) |
+| capacitor-plugins 仓 `plugins/<x>/` | `plugins/<x>/` | 官方插件套件 20 个(device/clipboard/haptics/share/battery/app-info/app-launcher/connectivity/email/flashlight/motion/phone-dialer/sms/preferences/geolocation/browser/dialog/action-sheet/app/file-viewer) |
 | `capacitor.settings.gradle` / `capacitor.build.gradle` | `napacitor.build.props` | nap sync 生成的 MSBuild 工程引用 |
 | `cap add/copy/sync/open/run/ls` | `nap add/copy/sync/open/build/clean/run/list` | 工作流同形(+build/clean 为面向 dotnet 的命令传递) |
 | `@capacitor/assets`(独立 npm 工具) | `nap assets`(CLI 内置命令) | 品牌资产生成:图标/启动屏/主题颜色(MAUI Resizetizer 构建时出位图,零图像依赖) |

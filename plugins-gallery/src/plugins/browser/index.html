@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Browser · Napacitor</title>
+
+</head>
+<body>
+    <h1>Browser <code>@napacitor/browser</code></h1>
+    <p class="meta">
+        <span>分组:系统功能 · 注册名:Browser</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/browser" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">系统内嵌浏览器(Android Custom Tabs / iOS SFSafariViewController / 桌面回退到外部浏览器)。对应 .NET MAUI Browser API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>地址 <input id="in-url" type="text" value="https://github.com/jevonsflash/napacitor"></label>
+                <label>工具栏颜色 <input id="in-toolbar" type="text" value="#512BD4" placeholder="#RRGGBB(平台不支持时忽略)"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-open" class="green">打开 open()</button>
+                <button id="btn-close" class="orange">尝试关闭 close()</button>
+            </div>
+            <p class="hint">MAUI Browser API 未提供跨平台关闭入口,close() 原生端抛出 NOT_IMPLEMENTED;browerFinished / browserPageLoaded 事件同样需要平台代码,当前不派发。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Browser } from '@napacitor/browser';
+
+// 打开内嵌浏览器(工具栏颜色平台不支持时忽略)
+await Browser.open({
+  url: 'https://github.com/jevonsflash/napacitor',
+  toolbarColor: '#512BD4',
+});
+
+// 关闭:MAUI 无跨平台关闭入口,当前抛出 NOT_IMPLEMENTED
+// (Android Custom Tabs / iOS SFSafariViewController 需少量平台代码)
+await Browser.close();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

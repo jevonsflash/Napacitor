@@ -40,7 +40,7 @@ npm run build --workspaces --if-present
 批量构建并捕获失败(任一 tsc 失败要中止,别把半成品发出去):
 
 ```powershell
-$targets = @('app-info','app-launcher','connectivity','email','flashlight','motion','phone-dialer','sms')
+$targets = @('app-info','app-launcher','connectivity','email','flashlight','motion','phone-dialer','sms','preferences','geolocation','browser','dialog','action-sheet','app','file-viewer')
 $failed = @()
 foreach ($t in $targets) {
   npm run build --workspace "plugins/$t" 2>&1 | Out-Null
@@ -77,8 +77,8 @@ npm publish --dry-run --access public --workspace plugins/app-info
 # 单个插件
 npm publish --access public --workspace plugins/app-info
 
-# 批量发布 8 个未发布插件,逐个捕获退出码
-$targets = @('app-info','app-launcher','connectivity','email','flashlight','motion','phone-dialer','sms')
+# 批量发布 15 个未发布插件,逐个捕获退出码
+$targets = @('app-info','app-launcher','connectivity','email','flashlight','motion','phone-dialer','sms','preferences','geolocation','browser','dialog','action-sheet','app','file-viewer')
 $failed = @()
 foreach ($t in $targets) {
   $out = npm publish --access public --workspace "plugins/$t" 2>&1
