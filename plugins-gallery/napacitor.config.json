@@ -3,6 +3,18 @@
   "appName": "Plugins Gallery",
   "webDir": "src",
   "loggingBehavior": "debug",
+  "assets": {
+    "sourceDir": "assets",
+    "icon": "icon.svg",
+    "iconForeground": "icon-fg.svg",
+    "splash": "splash.svg",
+    "iconColor": "#512BD4",
+    "splashColor": "#512BD4",
+    "colors": {
+      "PageBackgroundColor": "#512BD4",
+      "PrimaryTextColor": "White"
+    }
+  },
   "maui": {
     "hostDir": "maui"
   }

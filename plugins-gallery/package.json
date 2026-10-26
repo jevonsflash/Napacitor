@@ -9,23 +9,23 @@
     "run:windows": "nap run --target windows"
   },
   "dependencies": {
-    "@napacitor/app-info": "file:../plugins/app-info",
-    "@napacitor/app-launcher": "file:../plugins/app-launcher",
-    "@napacitor/battery": "file:../plugins/battery",
-    "@napacitor/clipboard": "file:../plugins/clipboard",
-    "@napacitor/connectivity": "file:../plugins/connectivity",
-    "@napacitor/device": "file:../plugins/device",
-    "@napacitor/email": "file:../plugins/email",
-    "@napacitor/flashlight": "file:../plugins/flashlight",
-    "@napacitor/haptics": "file:../plugins/haptics",
-    "@napacitor/maui": "file:../maui",
-    "@napacitor/motion": "file:../plugins/motion",
-    "@napacitor/phone-dialer": "file:../plugins/phone-dialer",
-    "@napacitor/share": "file:../plugins/share",
-    "@napacitor/sms": "file:../plugins/sms"
+    "@napacitor/app-info": "0.1.2-beta.3",
+    "@napacitor/app-launcher": "0.1.2-beta.3",
+    "@napacitor/battery": "0.1.2-beta.3",
+    "@napacitor/clipboard": "0.1.2-beta.3",
+    "@napacitor/connectivity": "0.1.2-beta.3",
+    "@napacitor/device": "0.1.2-beta.3",
+    "@napacitor/email": "0.1.2-beta.3",
+    "@napacitor/flashlight": "0.1.2-beta.3",
+    "@napacitor/haptics": "0.1.2-beta.3",
+    "@napacitor/maui": "0.1.2-beta.8",
+    "@napacitor/motion": "0.1.2-beta.3",
+    "@napacitor/phone-dialer": "0.1.2-beta.3",
+    "@napacitor/share": "0.1.2-beta.3",
+    "@napacitor/sms": "0.1.2-beta.3"
   },
   "devDependencies": {
-    "@napacitor/cli": "file:../cli",
-    "@napacitor/core": "file:../core"
+    "@napacitor/cli": "0.1.2-beta.8",
+    "@napacitor/core": "0.1.2-beta.4"
   }
 }

@@ -60,7 +60,7 @@ Napacitor 的 **命令行工具**(`nap` 命令),对应 Capacitor 仓库中 `cli/
 
 1. **源图接入**:svg/png 拷入宿主 `Resources/AppIcon` 与 `Resources/Splash`(同名旧文件先清除,防换格式残留);未提供源图时保留模板默认图,仅更新颜色。支持约定查找(`assets/icon.svg`、`icon-fg.*` / `icon-foreground.*`、`splash.svg` / `splash.png`)与显式指定;
 2. **csproj 改写**:重写 `<MauiIcon>` / `<MauiSplashScreen>`(`Color` 属性,svg 启动图写 `BaseSize`)—— 各平台位图交给 [Resizetizer](https://learn.microsoft.com/dotnet/maui/user-interface/images/app-icons) 构建时生成,对应 Capacitor 由 `@capacitor/assets` 离线生成 PNG 的职责;
-3. **主题颜色注入**:`Colors.xaml` / `Styles.xaml` 以 `<!-- napacitor:assets-begin/end -->` 标记区块幂等重写,区块外可自由追加。`PageBackgroundColor` → ContentPage 背景样式、`PrimaryTextColor` → Label 文本色,其余自定义键仅写入 Colors.xaml 供 `DynamicResource` 引用。
+3. **主题颜色注入**:`Colors.xaml` 以 `<!-- napacitor:assets-begin/end -->` 标记区块幂等重写,区块外可自由追加。`Styles.xaml` 不归 assets 管 —— 样式按 `DynamicResource` 键引用 Colors.xaml 的颜色资源(ContentPage 背景 / Label 文本色),色值变化自动生效;其余自定义键同样写入 Colors.xaml,供用户 XAML 按需引用。
 
 `nap add maui` 时模板中的 `__ICON_COLOR__` / `__SPLASH_COLOR__` 等占位符即按此配置替换(未配置 assets 节取默认品牌色 `#512BD4`),后续可随时 `nap assets` 幂等更新。
 

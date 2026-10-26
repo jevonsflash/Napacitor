@@ -10,8 +10,10 @@
  *    (先移除同名旧文件,避免换格式后残留)
  *  - 改写宿主 csproj 的 <MauiIcon> / <MauiSplashScreen>(源图 + Color;
  *    未提供源图时仅更新 Color 属性)
- *  - 把主题颜色注入 Resources/Styles/Colors.xaml 与 Styles.xaml:
- *    napacitor:assets-begin/end 标记区块,幂等重写,区块外可自由追加
+ *  - 把主题颜色注入宿主 Resources/Styles/Colors.xaml:
+ *    napacitor:assets-begin/end 标记区块,幂等重写,区块外可自由追加。
+ *    Styles.xaml 不归 assets 管 —— 样式按 DynamicResource 键引用 Colors.xaml
+ *    的颜色资源,色值变化自动生效,无需同步改写
  */
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
@@ -27,7 +29,7 @@ export const DEFAULT_BRAND_COLOR = '#512BD4';
 /** 源图支持的扩展名(Resizetizer 的矢量/位图两种形态)。 */
 const IMAGE_EXTS = ['.svg', '.png'];
 
-/** napacitor 颜色/样式注入区块标记(Colors.xaml 与 Styles.xaml 共用)。 */
+/** napacitor 颜色注入区块标记(Colors.xaml)。 */
 const ASSETS_BLOCK_RE = /<!--\s*napacitor:assets-begin[\s\S]*?napacitor:assets-end\s*-->/;
 
 /** `nap add maui` 的模板颜色令牌(与 assets 配置共享缺省值)。 */
@@ -94,12 +96,10 @@ export async function generateAssets(config: CLIConfig): Promise<void> {
     await patchCsproj(hostCsprojPath(config), plan);
   });
 
-  await runTask('注入主题颜色(Colors.xaml / Styles.xaml)', async () => {
-    const stylesDir = path.join(hostDir, 'Resources', 'Styles');
+  await runTask('注入主题颜色(Colors.xaml)', async () => {
     await patchXaml(
-      path.join(stylesDir, 'Colors.xaml'), renderColorsBlock(plan.colors));
-    await patchXaml(
-      path.join(stylesDir, 'Styles.xaml'), renderStylesBlock(plan.colors));
+      path.join(hostDir, 'Resources', 'Styles', 'Colors.xaml'),
+      renderColorsBlock(plan.colors));
   });
 
   report(plan);
@@ -285,35 +285,6 @@ function renderColorsBlock(colorMap: Record<string, string>): string {
     '    <!-- napacitor:assets-begin' +
     '(由 `nap assets` 依据 napacitor.config.json 生成/更新;区块外可自由追加) -->',
     ...lines,
-    '    <!-- napacitor:assets-end -->',
-  ].join('\n');
-}
-
-/**
- * 渲染 Styles.xaml 注入区块:依据已知语义色键生成基础样式
- * (PageBackgroundColor → ContentPage 背景;PrimaryTextColor → Label 文本色),
- * 其余自定义色仅注入 Colors.xaml,供用户 XAML 以 DynamicResource 引用。
- */
-function renderStylesBlock(colorMap: Record<string, string>): string {
-  const styles: string[] = [];
-  if ('PageBackgroundColor' in colorMap) {
-    styles.push(
-      '    <Style TargetType="ContentPage" ApplyToDerivedTypes="True">',
-      '        <Setter Property="BackgroundColor" Value="{DynamicResource PageBackgroundColor}" />',
-      '    </Style>',
-    );
-  }
-  if ('PrimaryTextColor' in colorMap) {
-    styles.push(
-      '    <Style TargetType="Label" ApplyToDerivedTypes="True">',
-      '        <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />',
-      '    </Style>',
-    );
-  }
-  return [
-    '    <!-- napacitor:assets-begin' +
-    '(由 `nap assets` 生成/更新;引用 Colors.xaml 的颜色资源) -->',
-    ...styles,
     '    <!-- napacitor:assets-end -->',
   ].join('\n');
 }
