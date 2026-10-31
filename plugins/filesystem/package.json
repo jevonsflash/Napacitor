@@ -1,0 +1,13 @@
+{
+  "name": "@napacitor/filesystem",
+  "version": "0.1.2-beta.3",
+  "description": "Napacitor Filesystem 鎻掍欢(鏂囦欢绯荤粺璺緞涓庢崋缁戞枃浠?+ 绯荤粺鏂囦欢閫夋嫨鍣?灏佽 MAUI FileSystem/FilePicker API)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/", "maui/", "!maui/bin/", "!maui/obj/"],
+  "scripts": { "build": "tsc", "type-check": "tsc --noEmit" },
+  "peerDependencies": { "@napacitor/core": "^0.1.0" },
+  "devDependencies": { "@napacitor/core": "^0.1.0", "typescript": "~5.4.5" }
+}

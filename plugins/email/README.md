@@ -1,6 +1,26 @@
 # @napacitor/email
 
-电子邮件插件,封装 .NET MAUI `Email` API:编写并发送邮件。
+电子邮件插件,封装 .NET MAUI [`Email`](https://learn.microsoft.com/dotnet/maui/platform-integration/communication/email) API:编写并发送邮件。
+
+## 安装方式
+
+To use npm:
+
+```bash
+npm install @napacitor/email
+```
+
+To use yarn:
+
+```bash
+yarn add @napacitor/email
+```
+
+Sync native files:
+
+```bash
+npx nap sync
+```
 
 ## 用法
 
@@ -21,32 +41,58 @@ if (supported) {
 }
 ```
 
+## 实现原理
+
+封装 .NET MAUI 的 [`Email.Default.IsComposeSupported / ComposeAsync`](https://learn.microsoft.com/dotnet/maui/platform-integration/communication/email) 门面,打开系统邮件客户端。设备不支持时 `compose()` 抛 `UNSUPPORTED`。注意:插件仅唤起系统邮件客户端,不提供后台静默发送;`attachments` 参数当前原生端未映射(MAUI `EmailMessage` 支持附件,本插件暂未接入)。
+
+## 权限
+
+### Android
+
+无需额外配置。
+
+### iOS
+
+无需额外配置。
+
+### Windows
+
+无需额外配置。
+
 ## API
 
 ### isSupported()
 
 检查是否支持发送邮件。
 
-**返回:** `Promise<{ supported: boolean }>`
+**Returns:** `Promise<EmailSupportedResult>`
 
 ### compose(options?)
 
-编写并发送邮件(打开系统邮件客户端)。
+编写并发送邮件(打开系统邮件客户端);设备不支持时抛 `UNSUPPORTED`。
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| options.to | `string[]` | 收件人列表 |
-| options.cc | `string[]` | 抄送列表 |
-| options.bcc | `string[]` | 密送列表 |
-| options.subject | `string` | 邮件主题 |
-| options.body | `string` | 邮件正文 |
-| options.isHtml | `boolean` | 是否为 HTML 格式 |
-| options.attachments | `string[]` | 附件文件路径 |
+| Param       | Type             |
+| ----------- | ---------------- |
+| **`options`** | `ComposeOptions` |
 
-## 结构
+**Returns:** `Promise<void>`
 
-- `src/` —— TypeScript 源码
-- `dist/` —— 构建产物
-- `maui/` —— .NET MAUI C# 实现(程序集 `Napacitor.Email`)
+## Interfaces
 
-原生实现映射:`Email.Default.ComposeAsync`。
+### ComposeOptions
+
+| Prop              | Type       | Description                                                                    |
+| ----------------- | ---------- | ------------------------------------------------------------------------------ |
+| **`to`**          | `string[]` | 收件人列表。                                                                   |
+| **`cc`**          | `string[]` | 抄送列表。                                                                     |
+| **`bcc`**         | `string[]` | 密送列表。                                                                     |
+| **`subject`**     | `string`   | 邮件主题。                                                                     |
+| **`body`**        | `string`   | 邮件正文。                                                                     |
+| **`isHtml`**      | `boolean`  | 是否为 HTML 格式。                                                             |
+| **`attachments`** | `string[]` | 附件列表(文件路径)。当前原生端未映射(MAUI `EmailMessage` 支持附件,本插件暂未接入)。 |
+
+### EmailSupportedResult
+
+| Prop            | Type      | Description              |
+| --------------- | --------- | ------------------------ |
+| **`supported`** | `boolean` | 当前设备是否支持发送邮件。 |

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Camera · Napacitor</title>
+
+</head>
+<body>
+    <h1>Camera <code>@napacitor/camera</code></h1>
+    <p class="meta">
+        <span>分组:硬件控制 · 注册名:Camera</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/camera" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">拍照 / 录像与媒体库选取照片、视频。对应 .NET MAUI MediaPicker API(Windows 桌面无内置相机 UI,拍照/录像依赖系统相机应用)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>选择数量上限(0 不限制) <input id="in-limit" type="number" value="1" min="0"></label>
+                <label>最大宽度(像素,0 不缩放) <input id="in-maxw" type="number" value="0" min="0"></label>
+                <label>最大高度(像素,0 不缩放) <input id="in-maxh" type="number" value="0" min="0"></label>
+                <label>压缩质量 0-100 <input id="in-quality" type="number" value="100" min="0" max="100"></label>
+                <label>按 EXIF 方向旋转 <input id="in-rotate" type="checkbox" checked></label>
+                <label>保留元数据 <input id="in-meta" type="checkbox"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-supported" class="gray">支持拍照/录像? isCaptureSupported()</button>
+                <button id="btn-photos" class="green">媒体库选照片 pickPhotos()</button>
+                <button id="btn-videos" class="green">媒体库选视频 pickVideos()</button>
+                <button id="btn-photo" class="orange">拍照 capturePhoto()</button>
+                <button id="btn-video" class="orange">录像 captureVideo()</button>
+            </div>
+            <div id="output" class="output">结果将显示在这里</div>
+            <img id="preview" alt="媒体预览" style="display:none;max-width:100%;margin-top:8px;border-radius:6px;">
+            <p class="hint">照片类结果会在下方预览;base64 内容展示时截断;path 仅平台可用时返回,不可依赖。selectionLimit 在 Android 部分选择器 UI 不强制、Windows 不支持。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Camera } from '@napacitor/camera';
+
+// 设备是否支持拍照 / 录像
+const supported = await Camera.isCaptureSupported();
+
+// 从媒体库选取照片(可带图像处理参数)
+const photos = await Camera.pickPhotos({
+  selectionLimit: 3,
+  maximumWidth: 1280,
+  compressionQuality: 80,
+});
+
+// 拍一张照片(取消返回 null)
+const photo = await Camera.capturePhoto();
+if (photo) {
+  // photo.data 为 base64,photo.contentType 如 'image/jpeg'
+  const src = `data:${photo.contentType || 'image/jpeg'};base64,${photo.data}`;
+}
+
+// 录像(取消返回 null)
+const video = await Camera.captureVideo();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

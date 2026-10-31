@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Contacts · Napacitor</title>
+
+</head>
+<body>
+    <h1>Contacts <code>@napacitor/contacts</code></h1>
+    <p class="meta">
+        <span>分组:通讯 · 注册名:Contacts</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/contacts" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">读取设备全部联系人与系统联系人选择器。对应 .NET MAUI Contacts API(仅只读,不含写入/修改)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>最多展示条数 <input id="in-limit" type="number" value="20" min="1"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-all" class="green">读取全部联系人 getContacts()</button>
+                <button id="btn-pick" class="orange">选择单个联系人 pickContact()</button>
+            </div>
+            <div id="output" class="output">结果将显示在这里</div>
+            <p class="hint">getContacts 需要联系人读取权限,拒绝时抛错;pickContact 在 Windows 上不受支持(抛 UNSUPPORTED),取消时返回 null。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Contacts } from '@napacitor/contacts';
+
+// 读取设备上的全部联系人(权限拒绝时抛错)
+const contacts = await Contacts.getContacts();
+for (const c of contacts) {
+  console.log(c.displayName, c.phones.map((p) => p.phoneNumber));
+}
+
+// 打开系统联系人选择器(取消返回 null;Windows 不支持)
+const picked = await Contacts.pickContact();
+if (picked) {
+  console.log(picked.displayName, picked.emails);
+}</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,6 +1,26 @@
 # @napacitor/sms
 
-短信插件,封装 .NET MAUI `Sms` API:发送短信。
+短信插件,封装 .NET MAUI [`Sms`](https://learn.microsoft.com/dotnet/maui/platform-integration/communication/sms) API:发送短信。
+
+## 安装方式
+
+To use npm:
+
+```bash
+npm install @napacitor/sms
+```
+
+To use yarn:
+
+```bash
+yarn add @napacitor/sms
+```
+
+Sync native files:
+
+```bash
+npx nap sync
+```
 
 ## 用法
 
@@ -18,27 +38,53 @@ if (supported) {
 }
 ```
 
+## 实现原理
+
+封装 .NET MAUI 的 [`Sms.Default.IsComposeSupported / ComposeAsync`](https://learn.microsoft.com/dotnet/maui/platform-integration/communication/sms) 门面,打开系统短信客户端。设备不支持时 `send()` 抛 `UNSUPPORTED`。注意:插件仅唤起系统短信客户端,不提供后台静默发送。
+
+## 权限
+
+### Android
+
+无需额外配置(短信经系统 Intent 完成,不直接发送)。
+
+### iOS
+
+无需额外配置。
+
+### Windows
+
+无需额外配置。
+
 ## API
 
 ### isSupported()
 
 检查是否支持发送短信。
 
-**返回:** `Promise<{ supported: boolean }>`
+**Returns:** `Promise<SmsSupportedResult>`
 
 ### send(options)
 
-发送短信(打开系统短信客户端)。
+发送短信(打开系统短信客户端;设备不支持时抛 `UNSUPPORTED`)。
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| options.recipients | `string[]` | **必填**。收件人手机号列表 |
-| options.body | `string` | 短信正文 |
+| Param       | Type         |
+| ----------- | ------------ |
+| **`options`** | `SmsOptions` |
 
-## 结构
+**Returns:** `Promise<void>`
 
-- `src/` —— TypeScript 源码
-- `dist/` —— 构建产物
-- `maui/` —— .NET MAUI C# 实现(程序集 `Napacitor.Sms`)
+## Interfaces
 
-原生实现映射:`Sms.Default.ComposeAsync`。
+### SmsOptions
+
+| Prop             | Type       | Description                                              |
+| ---------------- | ---------- | -------------------------------------------------------- |
+| **`recipients`** | `string[]` | 收件人手机号列表(不能为空,否则抛 `INVALID_ARGUMENTS`)。  |
+| **`body`**       | `string`   | 短信正文。                                               |
+
+### SmsSupportedResult
+
+| Prop            | Type      | Description              |
+| --------------- | --------- | ------------------------ |
+| **`supported`** | `boolean` | 当前设备是否支持发送短信。 |

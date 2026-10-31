@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Filesystem · Napacitor</title>
+
+</head>
+<body>
+    <h1>Filesystem <code>@napacitor/filesystem</code></h1>
+    <p class="meta">
+        <span>分组:系统功能 · 注册名:Filesystem</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/filesystem" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">文件系统路径与捆绑文件访问 + 系统文件选择器。对应 .NET MAUI FileSystem / FilePicker API。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>包内资源路径(Resources/Raw 下) <input id="in-bundle-path" type="text" value="AboutAssets.txt"></label>
+                <label>复制目标目录
+                    <select id="in-target">
+                        <option value="cache">cache(缓存目录)</option>
+                        <option value="data">data(应用数据目录)</option>
+                    </select>
+                </label>
+                <label>目标文件名(留空与源同名) <input id="in-file-name" type="text" placeholder="例如 settings.json"></label>
+                <label>选择器文件类型过滤
+                    <select id="in-types">
+                        <option value="any">any(不过滤)</option>
+                        <option value="images">images(仅图片)</option>
+                        <option value="videos">videos(仅视频)</option>
+                    </select>
+                </label>
+            </div>
+            <div class="btns">
+                <button id="btn-paths" class="gray">查询目录路径 getDirectoryPaths()</button>
+                <button id="btn-read" class="green">读取捆绑文件 readBundleFile()</button>
+                <button id="btn-copy" class="purple">复制捆绑文件 copyBundleFile()</button>
+                <button id="btn-pick" class="orange">选取单个文件 pickFile()</button>
+                <button id="btn-picks">选取多个文件 pickFiles()</button>
+            </div>
+            <div id="output" class="output">结果将显示在这里</div>
+            <p class="hint">选取到的文件内容以 base64 返回(展示时截断);path 仅平台可用时返回,不可依赖。选择器标题在 Windows 上不会显示。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Filesystem } from '@napacitor/filesystem';
+
+// 获取缓存目录与应用数据目录
+const paths = await Filesystem.getDirectoryPaths();
+console.log(paths.cacheDirectory, paths.dataDirectory);
+
+// 读取应用包内捆绑文件(Resources/Raw 下)
+const { data } = await Filesystem.readBundleFile({
+  path: 'config/settings.json',
+});
+
+// 将捆绑文件复制到缓存目录并拿到绝对路径
+const { path } = await Filesystem.copyBundleFile({
+  path: 'config/settings.json',
+  targetDirectory: 'data',
+});
+
+// 系统文件选择器(取消时单个返回 null、多个返回空数组)
+const file = await Filesystem.pickFile({ types: 'images' });
+const files = await Filesystem.pickFiles();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

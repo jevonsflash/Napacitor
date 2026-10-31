@@ -1,6 +1,6 @@
 # @napacitor/motion
 
-统一传感器插件,封装 .NET MAUI 五类传感器 API:
+统一传感器插件,封装 .NET MAUI [`Accelerometer`](https://learn.microsoft.com/dotnet/maui/platform-integration/device/sensors) 文档所述五类传感器 API:
 
 | 传感器 | MAUI 原生类 | 事件名 |
 |--------|------------|--------|
@@ -10,102 +10,203 @@
 | 指南针 | `Compass` | `compassReading` |
 | 气压计 | `Barometer` | `barometerReading` |
 
+## 安装方式
+
+To use npm:
+
+```bash
+npm install @napacitor/motion
+```
+
+To use yarn:
+
+```bash
+yarn add @napacitor/motion
+```
+
+Sync native files:
+
+```bash
+npx nap sync
+```
+
 ## 用法
 
 ```ts
 import { Motion, SensorSpeed } from '@napacitor/motion';
 
+// ── 支持检测(五类传感器)────────────────────────────────────
+const accel = (await Motion.isAccelerometerSupported()).supported;
+const gyro = (await Motion.isGyroscopeSupported()).supported;
+const magneto = (await Motion.isMagnetometerSupported()).supported;
+const compass = (await Motion.isCompassSupported()).supported;
+const baro = (await Motion.isBarometerSupported()).supported;
+
 // ── 加速度计 ────────────────────────────────────────────────
-const { supported } = await Motion.isAccelerometerSupported();
-if (supported) {
+if (accel) {
   await Motion.startAccelerometer({ speed: SensorSpeed.Game });
   const handle = await Motion.addListener('accelerometerReading', ({ x, y, z }) => {
     console.log(`加速度: x=${x} y=${y} z=${z} (G)`);
   });
-  // ...
   await Motion.stopAccelerometer();
   await handle.remove();
 }
 
+// ── 陀螺仪 ──────────────────────────────────────────────────
+if (gyro) {
+  await Motion.startGyroscope({ speed: SensorSpeed.Ui });
+  await Motion.addListener('gyroscopeReading', ({ x, y, z }) => {
+    console.log(`角速度: x=${x} y=${y} z=${z} (rad/s)`);
+  });
+  await Motion.stopGyroscope();
+}
+
+// ── 磁力计 ──────────────────────────────────────────────────
+if (magneto) {
+  await Motion.startMagnetometer();
+  await Motion.addListener('magnetometerReading', ({ x, y, z }) => {
+    console.log(`磁场: x=${x} y=${y} z=${z} (μT)`);
+  });
+  await Motion.stopMagnetometer();
+}
+
 // ── 指南针 ──────────────────────────────────────────────────
-await Motion.startCompass();
-await Motion.addListener('compassReading', ({ headingMagnetic, headingTrue, calibration }) => {
-  console.log(`磁北: ${headingMagnetic}°  真北: ${headingTrue}°  校准: ${calibration}`);
-});
+if (compass) {
+  await Motion.startCompass();
+  await Motion.addListener('compassReading', ({ headingMagnetic, headingTrue, calibration }) => {
+    console.log(`磁北: ${headingMagnetic}°  真北: ${headingTrue}°  校准: ${calibration}`);
+  });
+  await Motion.stopCompass();
+}
 
 // ── 气压计 ──────────────────────────────────────────────────
-await Motion.startBarometer();
-await Motion.addListener('barometerReading', ({ pressure }) => {
-  console.log(`气压: ${pressure} hPa`);
-});
+if (baro) {
+  await Motion.startBarometer();
+  await Motion.addListener('barometerReading', ({ pressure }) => {
+    console.log(`气压: ${pressure} hPa`);
+  });
+  await Motion.stopBarometer();
+}
 
 // 移除全部监听
 await Motion.removeAllListeners();
 ```
 
+## 实现原理
+
+封装 .NET MAUI 的 [`Accelerometer / Gyroscope / Magnetometer / Compass / Barometer`](https://learn.microsoft.com/dotnet/maui/platform-integration/device/sensors) 文档所述 API:每种传感器独立管理订阅——首个 JS 监听器注册时订阅原生 `ReadingChanged`,最后一个移除时退订;`start*()` 调用 `Default.Start(speed)`,`stop*()` 调用 `Default.Stop()`。采样速率映射 MAUI `SensorSpeed` 枚举(`DEFAULT` 约 200ms / `UI` 约 60ms / `GAME` 约 40ms / `FASTEST` 约 20ms)。Web 端:加速度计/陀螺仪走 `DeviceMotionEvent`(需 HTTPS 或 localhost),指南针走 `DeviceOrientationEvent`(iOS 需用户授权),磁力计与气压计浏览器无标准 API。
+
+## 权限
+
+### Android
+
+无需额外配置(传感器访问不需要权限声明)。
+
+### iOS
+
+无需额外配置。
+
+### Windows
+
+无需额外配置。
+
 ## API
 
-### 支持检测
+### isAccelerometerSupported() / isGyroscopeSupported() / isMagnetometerSupported() / isCompassSupported() / isBarometerSupported()
 
-| 方法 | 返回 |
-|------|------|
-| `isAccelerometerSupported()` | `Promise<{ supported: boolean }>` |
-| `isGyroscopeSupported()` | `Promise<{ supported: boolean }>` |
-| `isMagnetometerSupported()` | `Promise<{ supported: boolean }>` |
-| `isCompassSupported()` | `Promise<{ supported: boolean }>` |
-| `isBarometerSupported()` | `Promise<{ supported: boolean }>` |
+检查对应传感器是否可用。
 
-### 启动 / 停止
+**Returns:** `Promise<SensorSupportedResult>`
 
-每种传感器均提供 `start*(options?)` 与 `stop*()` 方法:
+### startAccelerometer(options?) / startGyroscope(options?) / startMagnetometer(options?) / startCompass(options?) / startBarometer(options?)
 
-| 启动 | 停止 |
-|------|------|
-| `startAccelerometer(options?)` | `stopAccelerometer()` |
-| `startGyroscope(options?)` | `stopGyroscope()` |
-| `startMagnetometer(options?)` | `stopMagnetometer()` |
-| `startCompass(options?)` | `stopCompass()` |
-| `startBarometer(options?)` | `stopBarometer()` |
+启动对应传感器监听(设备不支持时抛 `UNSUPPORTED`)。
 
-**`StartSensorOptions`:**
+| Param       | Type                 |
+| ----------- | -------------------- |
+| **`options`** | `StartSensorOptions` |
 
-| 字段 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| speed | `SensorSpeed` | `DEFAULT` | `DEFAULT`(200ms) / `UI`(60ms) / `GAME`(40ms) / `FASTEST`(20ms) |
+**Returns:** `Promise<void>`
 
-### 事件监听
+### stopAccelerometer() / stopGyroscope() / stopMagnetometer() / stopCompass() / stopBarometer()
 
-| 事件名 | 回调参数类型 | 字段 |
-|--------|-------------|------|
-| `accelerometerReading` | `AxisReading` | `x, y, z` (单位: G) |
-| `gyroscopeReading` | `AxisReading` | `x, y, z` (单位: rad/s) |
-| `magnetometerReading` | `AxisReading` | `x, y, z` (单位: µT) |
-| `compassReading` | `CompassReading` | `headingMagnetic, headingTrue` (度), `calibration` |
-| `barometerReading` | `BarometerReading` | `pressure` (hPa) |
+停止对应传感器。
+
+**Returns:** `Promise<void>`
+
+### addListener('accelerometerReading', callback) / addListener('gyroscopeReading', callback) / addListener('magnetometerReading', callback)
+
+监听三轴传感器读数(见下表事件名与回调类型)。
+
+| Param        | Type                     |
+| ------------ | ------------------------ |
+| **`eventName`** | `'accelerometerReading'` / `'gyroscopeReading'` / `'magnetometerReading'` |
+| **`callback`**  | `AccelerometerCallback` / `GyroscopeCallback` / `MagnetometerCallback` |
+
+**Returns:** `Promise<PluginListenerHandle> & PluginListenerHandle`
+
+### addListener('compassReading', callback)
+
+监听指南针读数。
+
+| Param        | Type               |
+| ------------ | ------------------ |
+| **`eventName`** | `'compassReading'` |
+| **`callback`**  | `CompassCallback`  |
+
+**Returns:** `Promise<PluginListenerHandle> & PluginListenerHandle`
+
+### addListener('barometerReading', callback)
+
+监听气压计读数。
+
+| Param        | Type                 |
+| ------------ | -------------------- |
+| **`eventName`** | `'barometerReading'` |
+| **`callback`**  | `BarometerCallback`  |
+
+**Returns:** `Promise<PluginListenerHandle> & PluginListenerHandle`
 
 ### removeAllListeners()
 
-移除该插件全部监听器并停止所有活跃传感器。
+移除该插件全部监听器(每种传感器退订原生事件;正在运行中的传感器请另行调用 `stop*()` 停止)。
 
-## 浏览器兼容性
+**Returns:** `Promise<void>`
 
-| 传感器 | Web API | 备注 |
-|--------|---------|------|
-| 加速度计 | `DeviceMotionEvent` | 需 HTTPS 或 localhost |
-| 陀螺仪 | `DeviceMotionEvent` | 同上 |
-| 指南针 | `DeviceOrientationEvent` | iOS 需用户授权 |
-| 磁力计 | — | 浏览器无标准 API |
-| 气压计 | — | 浏览器无标准 API |
+## Interfaces
 
-## 结构
+### SensorSupportedResult
 
-- `src/` —— TypeScript 源码(index / definitions / web)
-- `dist/` —— 构建产物(CJS + d.ts)
-- `maui/` —— .NET MAUI C# 实现(程序集 `Napacitor.Motion`)
+| Prop            | Type      | Description          |
+| --------------- | --------- | -------------------- |
+| **`supported`** | `boolean` | 传感器是否可用。     |
 
-原生实现映射:
-- `Accelerometer.Default.Start / Stop / ReadingChanged`
-- `Gyroscope.Default.Start / Stop / ReadingChanged`
-- `Magnetometer.Default.Start / Stop / ReadingChanged`
-- `Compass.Default.Start / Stop / ReadingChanged`
-- `Barometer.Default.Start / Stop / ReadingChanged`
+### StartSensorOptions
+
+| Prop        | Type          | Description                                                                                |
+| ----------- | ------------- | ------------------------------------------------------------------------------------------ |
+| **`speed`** | `SensorSpeed` | 采样速率(默认 `DEFAULT`):`DEFAULT`(约 200ms / 5Hz) / `UI`(约 60ms / ~17Hz) / `GAME`(约 40ms / 25Hz) / `FASTEST`(约 20ms / 50Hz)。 |
+
+### AxisReading
+
+三轴读数(加速度计 / 陀螺仪 / 磁力计共用结构)。
+
+| Prop     | Type     | Description              |
+| -------- | -------- | ------------------------ |
+| **`x`**  | `number` | X 轴分量(单位依传感器:加速度计 G / 陀螺仪 rad/s / 磁力计 µT)。 |
+| **`y`**  | `number` | Y 轴分量(同上)。         |
+| **`z`**  | `number` | Z 轴分量(同上)。         |
+
+### CompassReading
+
+| Prop                  | Type                 | Description                                                                                          |
+| --------------------- | -------------------- | ---------------------------------------------------------------------------------------------------- |
+| **`headingMagnetic`** | `number`             | 磁北方向角(0-360°,0=正北,顺时针递增)。                                                               |
+| **`headingTrue`**     | `number`             | 真北方向角。MAUI 10 的 `CompassData` 仅提供磁北方向角,原生端恒为 `-1`(不支持时)。                   |
+| **`calibration`**     | `CompassCalibration` | 校准精度等级。                                                               |
+
+### BarometerReading
+
+| Prop           | Type     | Description          |
+| -------------- | -------- | -------------------- |
+| **`pressure`** | `number` | 大气压强(hPa / 百帕)。 |
