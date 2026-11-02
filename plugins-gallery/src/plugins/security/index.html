@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Security · Napacitor</title>
+
+</head>
+<body>
+    <h1>Security <code>@napacitor/security</code></h1>
+    <p class="meta">
+        <span>分组:数据交互 · 注册名:Security</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/security" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">安全键值存储(封装 MAUI SecureStorage):iOS Keychain / Android EncryptedSharedPreferences + Keystore / Windows DataProtectionProvider,适合存放令牌等敏感数据。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>键 <input id="in-key" type="text" value="api_token"></label>
+                <label>值 <input id="in-value" type="text" value="secret-value"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-set" class="green">写入 set()</button>
+                <button id="btn-get" class="purple">读取 get()</button>
+                <button id="btn-remove">删除 remove()</button>
+                <button id="btn-clear" class="orange">清空 clear()</button>
+            </div>
+            <p class="hint">键值仅支持字符串,复杂对象请自行 JSON.stringify;与 Preferences 的区别在于数据经系统安全机制加密存储。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Security } from '@napacitor/security';
+
+// 写入(仅字符串,复杂对象请自行 JSON.stringify)
+await Security.set({ key: 'api_token', value: 'secret-value' });
+
+// 读取(未设置过时 value 为 null)
+const { value } = await Security.get({ key: 'api_token' });
+
+// 删除单个键 / 清空全部
+await Security.remove({ key: 'api_token' });
+await Security.clear();</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

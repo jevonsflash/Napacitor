@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Local Notification · Napacitor</title>
+
+</head>
+<body>
+    <h1>Local Notification <code>@napacitor/local-notification</code></h1>
+    <p class="meta">
+        <span>分组:交互反馈 · 注册名:LocalNotification</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/local-notification" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">立即或定时发送系统本地通知,支持权限请求、取消与点击回调(Android / iOS / Mac Catalyst / Windows 全平台)。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>标题 <input id="in-title" type="text" value="Napacitor 提醒"></label>
+                <label>正文 <input id="in-body" type="text" value="该喝水了"></label>
+                <label>定时发送(ISO 8601,留空为立即发送) <input id="in-at" type="text" placeholder="例如 2026-11-03T16:00:00Z"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-permission" class="gray">请求权限 requestPermission()</button>
+                <button id="btn-schedule" class="green">发送 schedule()</button>
+                <button id="btn-cancel">取消 cancel()</button>
+                <button id="btn-listen" class="orange">开始监听 notificationReceived</button>
+            </div>
+            <p class="hint">取消使用最近一次发送返回的 id;点击通知后应用被唤起(或在前台)时弹窗提示。Android 热启动点击暂不支持(见插件 README 局限)。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { LocalNotification } from '@napacitor/local-notification';
+
+// 请求权限(Android 13+ / iOS / Mac Catalyst 弹系统对话框)
+const { granted } = await LocalNotification.requestPermission();
+
+// 立即发送
+const { notifications } = await LocalNotification.schedule({
+  notifications: [{ title: '提醒', body: '该喝水了', id: 1 }],
+});
+
+// 定时发送(ISO 8601 时间)
+await LocalNotification.schedule({
+  notifications: [{ title: '会议', body: '15:00 开会', id: 2, at: '2026-11-03T15:00:00Z' }],
+});
+
+// 取消
+await LocalNotification.cancel({ notifications: [{ id: 1 }] });
+
+// 点击回调
+const handle = await LocalNotification.addListener('notificationReceived', (payload) => {
+  console.log(payload.id, payload.title, payload.body);
+});</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

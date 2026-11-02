@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Display · Napacitor</title>
+
+</head>
+<body>
+    <h1>Display <code>@napacitor/display</code></h1>
+    <p class="meta">
+        <span>分组:设备信息 · 注册名:Display</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/display" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">屏幕信息与显示控制(封装 MAUI DeviceDisplay):读取分辨率/密度/方向/刷新率,保持屏幕常亮,运行时锁定屏幕方向,并可监听屏幕指标变化。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="btns">
+                <button id="btn-info">获取屏幕信息 getInfo()</button>
+                <button id="btn-listen" class="orange">开始监听 displayChange</button>
+            </div>
+            <div class="btns">
+                <button id="btn-awake-on" class="green">保持常亮 ON</button>
+                <button id="btn-awake-off">保持常亮 OFF</button>
+                <button id="btn-lock-p">锁定竖屏 lock('portrait')</button>
+                <button id="btn-lock-l" class="purple">锁定横屏 lock('landscape')</button>
+                <button id="btn-unlock" class="gray">解锁 unlock()</button>
+            </div>
+            <p class="hint">锁方向在 Android/iOS/Mac Catalyst 有效,Windows 不支持(会抛 NOT_IMPLEMENTED)。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { Display } from '@napacitor/display';
+
+// 一次性读取
+const info = await Display.getInfo();
+console.log(info.width, info.height, info.density, info.orientation, info.refreshRate);
+
+// 保持屏幕常亮
+await Display.setKeepAwake({ keepAwake: true });
+
+// 锁定 / 解锁方向(Android/iOS/Mac Catalyst)
+await Display.lock({ orientation: 'portrait' });
+await Display.unlock();
+
+// 持续监听屏幕指标变化
+const handle = await Display.addListener('displayChange', (info) => {
+  console.log(info.orientation, info.width + 'x' + info.height);
+});
+// handle.remove() 停止监听</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

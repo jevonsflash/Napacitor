@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Database Sqlite · Napacitor</title>
+
+</head>
+<body>
+    <h1>Database Sqlite <code>@napacitor/database-sqlite</code></h1>
+    <p class="meta">
+        <span>分组:数据交互 · 注册名:DatabaseSqlite</span>
+        <a href="https://github.com/jevonsflash/napacitor/tree/main/plugins/database-sqlite" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+    </p>
+    <p class="desc">本地 SQLite 数据库(基于 Microsoft.Data.Sqlite):建表、参数化增删改查、事务与数据库文件管理。占位符用 ? 或 $1、$2。</p>
+
+    <section class="panel">
+        <h2>调试</h2>
+        <div class="body">
+            <div class="form">
+                <label>数据库名(留空为默认库 napacitor.db3) <input id="in-db" type="text" placeholder="例如 todo.db3"></label>
+                <label>SQL 语句 <input id="in-sql" type="text" value="CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"></label>
+            </div>
+            <div class="btns">
+                <button id="btn-execute" class="green">执行 execute()</button>
+                <button id="btn-query" class="purple">查询 query()</button>
+                <button id="btn-list">列出数据库 getDatabaseList()</button>
+                <button id="btn-delete" class="orange">删除库 deleteDatabase()</button>
+            </div>
+            <p class="hint">execute() 可一次执行多条分号分隔的语句;query() 用于 SELECT,结果逐行弹窗展示。</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>代码示例</h2>
+        <pre><code>import { DatabaseSqlite } from '@napacitor/database-sqlite';
+
+// 建表(可多条语句顺序执行,transaction 为 true 时整体回滚)
+await DatabaseSqlite.execute({
+  statements: 'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);',
+});
+
+// 参数化写入(占位符 ? 或 $1、$2)
+const { changes, lastId } = await DatabaseSqlite.run({
+  statement: 'INSERT INTO users (name) VALUES (?)',
+  values: ['张三'],
+});
+
+// 参数化查询
+const { values } = await DatabaseSqlite.query({
+  statement: 'SELECT * FROM users WHERE name = ?',
+  values: ['张三'],
+});
+
+// 数据库文件管理
+await DatabaseSqlite.getDatabaseList();
+await DatabaseSqlite.deleteDatabase({ database: 'todo.db3' });</code></pre>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>
