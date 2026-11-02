@@ -1,0 +1,26 @@
+{
+  "name": "@napacitor/local-notification",
+  "version": "0.1.2-beta.5",
+  "description": "Napacitor LocalNotification 插件(本地通知:立即/定时发送、权限、取消与点击回调,四平台实现)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "maui/",
+    "!maui/bin/",
+    "!maui/obj/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@napacitor/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@napacitor/core": "^0.1.0",
+    "typescript": "~5.4.5"
+  }
+}

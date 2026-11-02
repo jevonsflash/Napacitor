@@ -8,10 +8,10 @@
     "icon": "icon.svg",
     "iconForeground": "icon-fg.svg",
     "splash": "splash.svg",
-    "iconColor": "#3282F6",
-    "splashColor": "#3282F6",
+    "iconColor": "#512BD4",
+    "splashColor": "#512BD4",
     "colors": {
-      "PageBackgroundColor": "#3282F6",
+      "PageBackgroundColor": "#512BD4",
       "PrimaryTextColor": "White"
     }
   },

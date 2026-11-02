@@ -1,0 +1,26 @@
+{
+  "name": "@napacitor/security",
+  "version": "0.1.2-beta.5",
+  "description": "Napacitor Security 插件(安全键值存储,封装 MAUI SecureStorage API: iOS Keychain / Android EncryptedSharedPreferences / Windows DataProtectionProvider)",
+  "homepage": "https://github.com/jevonsflash/napacitor",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "maui/",
+    "!maui/bin/",
+    "!maui/obj/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@napacitor/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@napacitor/core": "^0.1.0",
+    "typescript": "~5.4.5"
+  }
+}
